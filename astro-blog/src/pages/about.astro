@@ -1,5 +1,16 @@
 ---
+const pageTitle = "About Me";
 
+const profile = {
+	firstName: "Fabricio",
+	country: "Brazil",
+	occupation: "Software Developer",
+	hobbies: ["Gaming", "Coding", "Learning", "Cooking"],
+	skills: [ "HTML", "CSS", "JavaScript", "React", "Astro", "Node", "Next", "C", "SQL" ]
+};
+
+const happy = true;
+const finished = false;
 ---
 
 <html lang="en">
@@ -8,7 +19,7 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro | About</title>
+		<title>Astro | {pageTitle}</title>
 	</head>
 	<body>
     <header>
@@ -18,12 +29,23 @@
         <a href="/blog">Blog</a>
       </nav>
     </header>
-    <h1>About me</h1>
+    <h1>{pageTitle}</h1>
     <h2>Astro Blog is my new Astro website!</h2>
 
     <p>I am working on the introductory tutorial for Astro. This is the second page of my website and the first one I created myself!</p>
 
     <p>This site will be updated as I complete the tutorial, so check back often to see how my journey is going!</p>
+
+    <p>My name is {profile.firstName} and I am from {profile.country}. I am a {profile.occupation}. I enjoy {profile.hobbies.join(", ")}.</p>
+
+    <p>My skills</p>
+    <ul>
+      {profile.skills.map(skill => <li>{skill}</li>)}
+    </ul>
+
+    {happy && <p>I'm happy to be learning Astro!</p>}
+
+    {finished && <p>I finished this tutorial!</p>}
   </body>
 </html>
 
