@@ -7,7 +7,7 @@ author: ‘Fabricio Liquesley’
 image:
   url: 'https://docs.astro.build/assets/rose.webp'
   alt: ‘Astro logo on dark background with pink glow.’
-tags: [ “astro,” “blogging,” “learning in public” ]
+tags: [ "astro", "blogging", "learning in public" ]
 ---
 
 Published: 2025-12-19

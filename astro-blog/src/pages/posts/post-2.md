@@ -7,7 +7,7 @@ author: ‘Fabricio Liquesley’
 image:
   url: 'https://docs.astro.build/assets/rose.webp'
   alt: ‘Astro logo on dark background with pink glow.’
-tags: [ “astro,” “blogging,” “learning in public”, "web", "javascript", "frameworks" ]
+tags: [ "astro", "blogging", "learning in public", "web", "javascript", "frameworks" ]
 ---
 
 Nos últimos anos, o desenvolvimento web passou por mudanças significativas. Frameworks modernos como **Astro**, **Next.js** e **SvelteKit** trouxeram novas abordagens focadas em performance, experiência do desenvolvedor e escalabilidade.
