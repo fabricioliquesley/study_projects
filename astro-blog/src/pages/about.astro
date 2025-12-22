@@ -1,5 +1,5 @@
 ---
-import "../styles/global.css";
+import "../styles/about.css";
 
 const pageTitle = "About Me";
 
@@ -13,10 +13,6 @@ const profile = {
 
 const happy = true;
 const finished = false;
-
-const skillColor = "navy";
-const fontWeight = "bold";
-const textCase = "uppercase";
 ---
 
 <html lang="en">
@@ -26,18 +22,6 @@ const textCase = "uppercase";
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro | {pageTitle}</title>
-    <style define:vars={{skillColor, fontWeight, textCase}}>
-      h1 {
-        color: purple;
-        font-size: 4rem;
-      }
-
-      .skill {
-        color: var(--skillColor);
-        font-weight: var(--fontWeight);
-        text-transform: var(--textCase);
-      }
-    </style>
 	</head>
 	<body>
     <header>
@@ -48,23 +32,25 @@ const textCase = "uppercase";
 				<a href="/blog">Blog</a>
 			</nav>
 		</header>
-    <h1>{pageTitle}</h1>
-    <h2>Astro Blog is my new Astro website!</h2>
-
-    <p>I am working on the introductory tutorial for Astro. This is the second page of my website and the first one I created myself!</p>
-
-    <p>This site will be updated as I complete the tutorial, so check back often to see how my journey is going!</p>
-
-    <p>My name is {profile.firstName} and I am from {profile.country}. I am a {profile.occupation}. I enjoy {profile.hobbies.join(", ")}.</p>
-
-    <p>My skills</p>
-    <ul>
-      {profile.skills.map(skill => <li class="skill">{skill}</li>)}
-    </ul>
-
-    {happy && <p>I'm happy to be learning Astro!</p>}
-
-    {finished && <p>I finished this tutorial!</p>}
+    <main>
+      <h1>{pageTitle}</h1>
+      <h2>Astro Blog is my new Astro website!</h2>
+      
+      <p>I am working on the introductory tutorial for Astro. This is the second page of my website and the first one I created myself!</p>
+      
+      <p>This site will be updated as I complete the tutorial, so check back often to see how my journey is going!</p>
+      
+      <p>My name is {profile.firstName} and I am from {profile.country}. I am a {profile.occupation}. I enjoy {profile.hobbies.join(", ")}.</p>
+      
+      <p>My skills:</p>
+      <ul>
+        {profile.skills.map(skill => <li class="skill">{skill}</li>)}
+      </ul>
+      
+      {happy && <p>I'm happy to be learning Astro!</p>}
+      
+      {finished && <p>I finished this tutorial!</p>}
+    </main>
   </body>
 </html>
 

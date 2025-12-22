@@ -1,0 +1,33 @@
+@import url("./global.css");
+
+:root {
+  --skill-background: #e2ad49;
+}
+
+main h1 {
+  font-size: 2.5rem;
+}
+
+main p {
+  text-align: justify;
+  line-height: 2.25rem;
+}
+
+main ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  list-style: none;
+  margin: 1rem 0;
+}
+
+main .skill {
+  background-color: var(--skill-background);
+  padding: 0.21rem 1rem;
+  border-radius: 999px;
+
+  color: var(--bg-color);
+  font-weight: bold;
+}
