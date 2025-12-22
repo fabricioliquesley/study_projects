@@ -1,6 +1,5 @@
 * {
   box-sizing: border-box;
-  margin: 0;
   padding: 0;
 }
 
@@ -32,7 +31,10 @@ body {
 
 header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--foreground);
 }
@@ -42,8 +44,13 @@ header span {
   font-weight: bold;
 }
 
+header .menu-btn {
+  display: none;
+}
+
 header nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -58,7 +65,25 @@ header nav a:hover {
   opacity: 1;
 }
 
+@media screen and (max-width: 425px) {
+  header nav {
+    display: none;
+  }
+
+  header nav.active {
+    display: flex;
+  }
+
+  header .menu-btn {
+    display: block;
+  }
+}
+
 main {
   width: 100%;
   margin: 2rem 0;
+}
+
+footer {
+  text-align: center;
 }
