@@ -1,4 +1,5 @@
 ---
+layout: "../../layouts/PostLayout.astro"
 title: "O futuro do desenvolvimento web com frameworks modernos"
 pubDate: 2025-12-19
 description: ‘Uma visão geral de como frameworks modernos estão mudando a forma de criar aplicações web.’
@@ -8,7 +9,6 @@ image:
   alt: ‘Astro logo on dark background with pink glow.’
 tags: [ “astro,” “blogging,” “learning in public”, "web", "javascript", "frameworks" ]
 ---
-# O futuro do desenvolvimento web com frameworks modernos
 
 Nos últimos anos, o desenvolvimento web passou por mudanças significativas. Frameworks modernos como **Astro**, **Next.js** e **SvelteKit** trouxeram novas abordagens focadas em performance, experiência do desenvolvedor e escalabilidade.
 
