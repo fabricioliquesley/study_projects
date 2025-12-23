@@ -1,9 +1,10 @@
 ---
 import Social from "../components/Social.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Greeting from "../components/Greeting.jsx";
 ---
 
 <BaseLayout pageTitle="Home">
-	<p>Hello World! Welcome to my Astro blog</p>
+	<Greeting client:load messages={["hello", "hi", "hey", "hola", "bonjour", "ciao"]} />
 	<Social platform="github" username="fabricioliquesley" />
 </BaseLayout>

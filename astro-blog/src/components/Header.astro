@@ -1,14 +1,18 @@
 ---
 import "../styles/global.css";
+import ThemeToggle from "./ThemeToggle.astro";
 ---
 
 <header>
   <span>Astro Blog</span>
-  <button class="menu-btn">Menu</button>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/about">About</a>
-    <a href="/blog">Blog</a>
-    <a href="/tags">tags</a>
-  </nav>
+  <div>
+    <button class="menu-btn">Menu</button>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/blog">Blog</a>
+      <a href="/tags">tags</a>
+    </nav>
+    <ThemeToggle />
+  </div>
 </header>

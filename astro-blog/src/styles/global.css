@@ -17,6 +17,18 @@
   }
 }
 
+:root[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --foreground: #1e1e1e;
+  --tag-background: #e2ad49;
+}
+
+:root[data-theme="dark"] {
+  --bg-color: #1e1e1e;
+  --foreground: #9c9c9c;
+  --tag-background: #e2ad49;
+}
+
 html {
   background-color: var(--bg-color);
   font-family: 'Times New Roman', Times, serif;
@@ -39,6 +51,12 @@ header {
   flex-wrap: wrap;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--foreground);
+}
+
+header div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 header span {
