@@ -1,5 +1,4 @@
 ---
-layout: "../../layouts/PostLayout.astro"
 title: "O futuro do desenvolvimento web com frameworks modernos"
 pubDate: 2025-12-19
 description: ‘Uma visão geral de como frameworks modernos estão mudando a forma de criar aplicações web.’

@@ -1,5 +1,4 @@
 ---
-layout: "../../layouts/PostLayout.astro"
 title: "Inteligência Artificial no dia a dia dos programadores"
 pubDate: 2025-12-19
 description: "Como a IA está se tornando uma aliada no desenvolvimento de software."
