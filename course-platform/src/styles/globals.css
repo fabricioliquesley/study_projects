@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+:root {
+}
+
+@theme inline {
+  --font-nunito-sans: var(--font-nunito-sans);
+}
