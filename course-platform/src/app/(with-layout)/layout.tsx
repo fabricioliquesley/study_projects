@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/shared/appSidebar";
-import { SearchInput } from "@/components/shared/searchInput";
+import { AppSidebar } from "@/components/shared/app-sidebar";
+import { SearchInput } from "@/components/shared/search-input";
 import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
