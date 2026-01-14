@@ -9,6 +9,7 @@ import {
 import Logo from "@/assets/logo.svg";
 import LogoIcon from "@/assets/logo-icon.svg";
 import { NavItems } from "./nav-items";
+import { NavUser } from "./nav-user";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
@@ -24,7 +25,9 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
       <SidebarContent>
         <NavItems />
       </SidebarContent>
-      <SidebarFooter>{/* FOOTER */}</SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
