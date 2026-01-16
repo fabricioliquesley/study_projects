@@ -1,9 +1,11 @@
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import "@/styles/globals.css";
-import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/themes";
 // import { ptBR } from "@clerk/localizations";
+
+import "@/styles/globals.css";
 
 const nunito = Nunito({
   variable: "--font-nunito-sans",
@@ -20,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ theme: shadcn }}>
       <html lang="en">
         <body
           className={cn(nunito.variable, "font-nunito-sans dark antialiased")}
