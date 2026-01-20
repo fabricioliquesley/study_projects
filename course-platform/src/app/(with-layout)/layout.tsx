@@ -1,13 +1,11 @@
 import { AppSidebar } from "@/components/shared/app-sidebar";
+import { SignInButton } from "@/components/shared/app-sidebar/sign-in-button";
 import { SearchInput } from "@/components/shared/search-input";
-import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LogIn } from "lucide-react";
-import Link from "next/link";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -23,12 +21,7 @@ export default function Layout({ children }: LayoutProps) {
             <SidebarTrigger className="-ml-1 flex md:hidden" />
             <SearchInput />
           </div>
-          <Link href="/auth/sign-in">
-            <Button size="sm">
-              <LogIn />
-              Sign In
-            </Button>
-          </Link>
+          <SignInButton />
         </header>
         <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
           {children}
