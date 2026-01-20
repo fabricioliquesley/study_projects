@@ -1,3 +1,5 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarGroup,
@@ -5,6 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useUser } from "@clerk/nextjs";
 import {
   BookOpen,
   BookUp2,
@@ -64,6 +67,10 @@ export function NavItems() {
     },
   ];
 
+  const { user } = useUser();
+
+  const isAdmin = user?.publicMetadata?.role === "admin";
+
   const renderNavItems = (items: NavItem[]) => {
     return items.map((item) => {
       const Icon = item.icon;
@@ -84,8 +91,12 @@ export function NavItems() {
     <SidebarGroup>
       <SidebarMenu>
         {renderNavItems(navItems)}
-        <Separator className="my-2" />
-        {renderNavItems(adminNavItems)}
+        {isAdmin && (
+          <>
+            <Separator className="my-2" />
+            {renderNavItems(adminNavItems)}
+          </>
+        )}
       </SidebarMenu>
     </SidebarGroup>
   );
