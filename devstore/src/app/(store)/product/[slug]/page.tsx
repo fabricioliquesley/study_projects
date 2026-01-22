@@ -1,3 +1,4 @@
+import { getFeaturedProducts } from "@/app/actions/getFeaturedProducts";
 import { getProductBySlug } from "@/app/actions/getProductBySlug";
 import { formatPrice } from "@/lib/price";
 import Image from "next/image";
@@ -14,6 +15,14 @@ export async function generateMetadata({ params }: ProductPageProps) {
   return {
     title: product.title,
   };
+}
+
+export async function generateStaticParams() {
+  const products = await getFeaturedProducts();
+
+  return products.map((product) => {
+    return { slug: product.slug };
+  });
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
