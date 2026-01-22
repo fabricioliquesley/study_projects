@@ -2,6 +2,11 @@ import { getFeaturedProducts } from "@/app/actions/getFeaturedProducts";
 import { Product } from "@/components/product";
 import { ProductBadge } from "@/components/product/badge";
 import { formatPrice } from "@/lib/price";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home",
+};
 
 export default async function Home() {
   const [highlightedProduct, ...otherProducts] = await getFeaturedProducts();
