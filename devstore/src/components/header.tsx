@@ -1,7 +1,6 @@
 import { Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import userFallback from "@/assets/user_fallback.jpg";
 
 export function Header() {
   return (
@@ -29,7 +28,7 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 hover:underline">
           <span className="text-sm">Perfil</span>
           <Image
-            src={userFallback}
+            src="/user_fallback.jpg"
             className="h-6 w-6 rounded-full"
             width={24}
             height={24}
