@@ -9,6 +9,7 @@
   /* --color-background: var(--background);
   --color-foreground: var(--foreground); */
   --font-inter: var(--font-inter);
+  --grid-app: min-content max-content;
 }
 
 /* @media (prefers-color-scheme: dark) {
