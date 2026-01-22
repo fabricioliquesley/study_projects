@@ -1,5 +1,6 @@
 import { getFeaturedProducts } from "@/app/actions/getFeaturedProducts";
 import { getProductBySlug } from "@/app/actions/getProductBySlug";
+import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { formatPrice } from "@/lib/price";
 import Image from "next/image";
 
@@ -88,12 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="mt-8 flex h-12 items-center justify-center rounded-full bg-emerald-600 font-semibold text-white"
-        >
-          Adicionar ao carrinho
-        </button>
+        <AddToCartButton productId={product.id} />
       </div>
     </div>
   );
