@@ -1,44 +1,39 @@
+import { getFeaturedProducts } from "@/app/actions/getFeaturedProducts";
 import { Product } from "@/components/product";
 import { ProductBadge } from "@/components/product/badge";
+import { formatPrice } from "@/lib/price";
 
-export default function Home() {
+export default async function Home() {
+  const [highlightedProduct, ...otherProducts] = await getFeaturedProducts();
+
   return (
     <div className="grid max-h-[860px] grid-cols-9 grid-rows-6 gap-6">
       <Product
-        href="/"
-        src="/moletom-never-stop-learning.png"
-        alt="Moletom Never Stop Learning"
+        href={`/product/${highlightedProduct.slug}`}
+        src={highlightedProduct.image}
+        alt={highlightedProduct.title}
       >
         <ProductBadge
-          title="Moletom Never Stop Learning"
-          price="R$129"
+          title={highlightedProduct.title}
+          price={formatPrice(highlightedProduct.price)}
           className="right-28 bottom-28"
         />
       </Product>
-      <Product
-        href="/"
-        src="/moletom-java.png"
-        alt="Moletom Java"
-        className="col-span-3 row-span-3"
-      >
-        <ProductBadge
-          title="Moletom Java"
-          price="R$129"
-          className="bottom-10 mx-auto"
-        />
-      </Product>
-      <Product
-        href="/"
-        src="/camiseta-dowhile-2022.png"
-        alt="Camiseta Dowhile 2022"
-        className="col-span-3 row-span-3"
-      >
-        <ProductBadge
-          title="Camiseta Dowhile 2022"
-          price="R$129"
-          className="bottom-10 mx-auto"
-        />
-      </Product>
+      {otherProducts.map((product) => (
+        <Product
+          key={product.id}
+          href={`/product/${product.slug}`}
+          src={product.image}
+          alt={product.title}
+          className="col-span-3 row-span-3"
+        >
+          <ProductBadge
+            title={product.title}
+            price={formatPrice(product.price)}
+            className="bottom-10 mx-auto"
+          />
+        </Product>
+      ))}
     </div>
   );
 }

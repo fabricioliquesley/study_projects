@@ -15,7 +15,7 @@ export function Product({ children, href, src, alt, className }: ProductProps) {
     <Link
       href={href}
       className={cn(
-        "group relative col-span-6 row-span-6 flex items-end justify-center overflow-hidden rounded-lg bg-zinc-900",
+        "group relative col-span-6 row-span-6 flex items-start justify-center overflow-hidden rounded-lg bg-zinc-900",
         className,
       )}
     >
