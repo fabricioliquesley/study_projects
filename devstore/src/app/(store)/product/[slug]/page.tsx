@@ -1,3 +1,5 @@
+import { getProductBySlug } from "@/app/actions/getProductBySlug";
+import { formatPrice } from "@/lib/price";
 import Image from "next/image";
 
 interface ProductPageProps {
@@ -8,13 +10,14 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   return (
     <div className="relative grid max-h-[835px] grid-cols-3">
       <div className="col-span-2 overflow-hidden">
         <Image
-          src="/moletom-never-stop-learning.png"
-          alt=""
+          src={product.image}
+          alt={product.title}
           width={1000}
           height={1000}
           quality={100}
@@ -22,20 +25,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       <div className="flex flex-col justify-center px-12">
-        <h1 className="text-3xl leading-tight font-bold">
-          Moletom Never Stop Learning
-        </h1>
+        <h1 className="text-3xl leading-tight font-bold">{product.title}</h1>
 
         <p className="mt-2 leading-relaxed text-zinc-400">
-          Moletom fabricado com 88% de algodão e 12% de poliéster
+          {product.description}
         </p>
 
         <div className="mt-8 flex items-center gap-3">
           <span className="inline-block rounded-full bg-violet-500 px-5 py-2.5 font-semibold">
-            R$129
+            {formatPrice(product.price)}
           </span>
           <span className="text-sm text-zinc-400">
-            Em 12x s/ juros de R$10,75
+            Em 12x s/ juros de {formatPrice(product.price / 12)}
           </span>
         </div>
 
