@@ -17,6 +17,7 @@ export default async function Home() {
         href={`/product/${highlightedProduct.slug}`}
         src={highlightedProduct.image}
         alt={highlightedProduct.title}
+        className="col-span-6 row-span-6"
       >
         <ProductBadge
           title={highlightedProduct.title}
