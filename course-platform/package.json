@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "pnpm prisma db seed"
   },
   "dependencies": {
     "@clerk/localizations": "^3.34.0",
