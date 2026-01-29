@@ -89,6 +89,15 @@
   button {
     @apply cursor-pointer;
   }
+
+  .scroll-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scroll-hidden::-webkit-scrollbar {
+    @apply hidden;
+  }
 }
 
 .dark {
