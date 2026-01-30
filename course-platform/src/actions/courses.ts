@@ -29,8 +29,12 @@ export async function getCourses({ query, tags: rawTags }: GetCoursesPayload) {
         ? [{ title: { search: query }, description: { search: query } }]
         : undefined,
     },
+    include: {
+      tags: true,
+      modules: true,
+    },
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
   });
 
