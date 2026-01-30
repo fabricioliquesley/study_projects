@@ -40,3 +40,61 @@ export async function getCourses({ query, tags: rawTags }: GetCoursesPayload) {
 
   return courses;
 }
+
+export async function getCourseBySlug(slug: string) {
+  if (!slug) {
+    return null;
+  }
+
+  const course = await prisma.course.findUnique({
+    where: {
+      slug,
+    },
+    include: {
+      tags: true,
+      modules: {
+        include: {
+          lessons: {
+            orderBy: {
+              order: "asc",
+            },
+          },
+        },
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
+
+  return course;
+}
+
+export async function getCourseById(id: string) {
+  if (!id) {
+    return null;
+  }
+
+  const course = await prisma.course.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      tags: true,
+      modules: {
+        include: {
+          lessons: {
+            orderBy: {
+              order: "asc",
+            },
+          },
+        },
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
+
+  return course;
+}
