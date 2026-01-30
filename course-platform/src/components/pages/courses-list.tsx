@@ -12,10 +12,10 @@ export async function CoursesList({ query, tags }: CourseListProps) {
   if (!courses) return;
 
   return (
-    <div>
+    <section className="xl: mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {courses.map((course) => (
-        <CourseItem key={course.id} title={course.title} />
+        <CourseItem key={course.id} course={course} />
       ))}
-    </div>
+    </section>
   );
 }
