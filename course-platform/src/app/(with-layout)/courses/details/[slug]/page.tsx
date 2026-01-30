@@ -14,6 +14,8 @@ import {
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
+import { CourseProgress } from "@/components/pages/course-progress";
+import { BackButton } from "@/components/shared/back-button";
 
 interface DetailsPageProps {
   params: Promise<{
@@ -70,8 +72,10 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
     <section className="flex flex-col">
       <div className="flex flex-col justify-between gap-6 md:flex-row">
         <div>
-          back button{" "}
-          <h1 className="text-3xl font-bold sm:text-4xl">{course.title}</h1>
+          <BackButton />
+          <h1 className="mt-6 text-3xl font-bold sm:text-4xl">
+            {course.title}
+          </h1>
           {course.description && (
             <p className="text-muted-foreground mt-1">{course.description}</p>
           )}
@@ -99,7 +103,7 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
 
       <Separator className="my-6" />
 
-      <div className="md> grid w-full md:grid-cols-[1fr_400px]">
+      <div className="grid w-full gap-6 md:grid-cols-[1fr_400px]">
         <Tabs defaultValue="overview">
           <TabsList className="w-full md:max-w-[300px]">
             <TabsTrigger
@@ -141,8 +145,36 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
               ))}
             </div>
           </TabsContent>
-          <TabsContent value="content">Content</TabsContent>
+          <TabsContent value="content" className="mt-4 flex flex-col gap-6">
+            {course.modules.map((mod, index) => (
+              <div
+                key={mod.id}
+                className="bg-muted flex items-center gap-4 rounded-2xl p-4"
+              >
+                <div className="border-primary text-primary bg-primary/10 flex h-12 w-12 min-w-12 items-center justify-center rounded-full border-2 text-2xl font-bold">
+                  {index + 1}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold sm:text-xl">{mod.title}</p>
+                    <Badge variant={"outline"}>
+                      {mod.lessons.length} lesson
+                      {mod.lessons.length === 1 ? "" : "s"}
+                    </Badge>
+                  </div>
+                  {!!mod.description && (
+                    <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                      {mod.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </TabsContent>
         </Tabs>
+
+        <CourseProgress course={course} />
       </div>
     </section>
   );
