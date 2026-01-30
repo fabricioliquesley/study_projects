@@ -23,9 +23,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
           <SignInButton />
         </header>
-        <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+        <main className="flex flex-1 flex-col gap-6 overflow-auto p-6">
           {children}
-        </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
