@@ -22,3 +22,10 @@ export function formatDuration(durationInMs: number, showHours = false) {
 export function formatLevel(level: string) {
   return level.charAt(0) + level.slice(1).toLowerCase();
 }
+
+export function formatPrice(price: number) {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
