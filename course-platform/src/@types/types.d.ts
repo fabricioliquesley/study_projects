@@ -7,3 +7,7 @@ export type CourseWithTagsAndModules = Course & {
   tags: Tag[];
   modules: Module[];
 };
+
+export type CourseModuleWithLessons = Module & {
+  lessons: Lesson[];
+};
