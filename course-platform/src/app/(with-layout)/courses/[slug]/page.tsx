@@ -1,5 +1,6 @@
 import { getCourseBySlug } from "@/actions/courses";
 import { LessonDetails } from "@/components/pages/lesson-details";
+import { ModulesList } from "@/components/pages/modules-list";
 import { TopDetails } from "@/components/pages/top-details";
 import { notFound } from "next/navigation";
 
@@ -23,6 +24,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
         <LessonDetails lesson={course.modules[0].lessons[0]} />
       </div>
+
+      <ModulesList modules={course.modules} />
     </div>
   );
 }
