@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { BackButton } from "../shared/back-button";
 import { Course } from "@/@types/types";
+import { ToggleModuleListCollapsed } from "../shared/toggle-module-list-collapsed";
+import { ToggleAutoplay } from "../shared/toggle-autoplay";
 
 interface TopDetailsProps {
   course: Course;
@@ -24,7 +26,10 @@ export function TopDetails({ course }: TopDetailsProps) {
         <p className="line-clamp-1">lesson title</p>
       </div>
 
-      <div className="ml-auto flex items-center gap-4"></div>
+      <div className="ml-auto flex items-center gap-4">
+        <ToggleAutoplay />
+        <ToggleModuleListCollapsed className="sm:hidden" />
+      </div>
     </div>
   );
 }
