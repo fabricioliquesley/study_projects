@@ -21,7 +21,7 @@ interface ModulesListProps {
 export function ModulesList({ modules }: ModulesListProps) {
   const params = useParams();
 
-  const moduleId = modules[0].id;
+  const moduleId = params.moduleId as string;
   const courseSlug = params.slug as string;
 
   const {
