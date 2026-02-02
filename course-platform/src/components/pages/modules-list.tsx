@@ -9,13 +9,20 @@ import { Button } from "../ui/button";
 import { PanelRightOpen } from "lucide-react";
 import { ToggleModuleListCollapsed } from "../shared/toggle-module-list-collapsed";
 import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { getCourseProgress } from "@/actions/course-progress";
+import { queryKeys } from "@/constants/query-keys";
 
 interface ModulesListProps {
   modules: CourseModuleWithLessons[];
 }
 
 export function ModulesList({ modules }: ModulesListProps) {
+  const params = useParams();
+
   const moduleId = modules[0].id;
+  const courseSlug = params.slug as string;
 
   const {
     expandedModule,
@@ -37,6 +44,14 @@ export function ModulesList({ modules }: ModulesListProps) {
   const handleToggleCollapsed = () => {
     setModulesListCollapsed(!modulesListCollapsed);
   };
+
+  const { data: courseProgress } = useQuery({
+    queryKey: queryKeys.courseProgress(courseSlug),
+    queryFn: () => getCourseProgress(courseSlug),
+    enabled: !!courseSlug,
+  });
+
+  const completedLessons = courseProgress?.completedLessons ?? [];
 
   return (
     <aside
@@ -77,7 +92,11 @@ export function ModulesList({ modules }: ModulesListProps) {
             onValueChange={setExpandedModule}
           >
             {modules.map((courseModule) => (
-              <ModuleItem key={courseModule.id} courseModule={courseModule} />
+              <ModuleItem
+                key={courseModule.id}
+                courseModule={courseModule}
+                completedLessons={completedLessons}
+              />
             ))}
           </Accordion.Root>
         </>
