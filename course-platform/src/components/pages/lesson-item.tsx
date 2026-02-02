@@ -1,19 +1,66 @@
+"use client";
+
 import { Lesson } from "@/@types/types";
 import { cn, formatDuration } from "@/lib/utils";
 import { CircleCheckBig, CircleX, Video } from "lucide-react";
 import Link from "next/link";
 import { TooltipWrapper } from "../ui/tootipWrapper";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import {
+  markLessonAsCompleted,
+  unmarkLessonAsCompleted,
+} from "@/actions/course-progress";
+import { queryKeys } from "@/constants/query-keys";
 
 interface LessonItemProps {
   lesson: Lesson;
+  completed: boolean;
 }
 
-export function LessonItem({ lesson }: LessonItemProps) {
-  const currentLessonId = "cmkyrpvmq0037rvsbdx8s9uh7";
-  const completed = true;
+export function LessonItem({ lesson, completed }: LessonItemProps) {
+  const params = useParams();
+  const queryClient = useQueryClient();
+
+  const currentLessonId = "cmkyrpvmh0030rvsbf8ux9jyu";
 
   const PrimaryIcon = completed ? CircleCheckBig : Video;
   const SecondaryIcon = completed ? CircleX : CircleCheckBig;
+
+  const lessonId = lesson.id;
+  const courseSlug = params.slug as string;
+
+  const { mutate: completeLesson, isPending: isCompletingLesson } = useMutation(
+    {
+      mutationFn: () => markLessonAsCompleted({ courseSlug, lessonId }),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.courseProgress(courseSlug),
+        });
+      },
+    },
+  );
+
+  const { mutate: notCompleteLesson, isPending: isNotCompletingLesson } =
+    useMutation({
+      mutationFn: () => unmarkLessonAsCompleted(lessonId),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.courseProgress(courseSlug),
+        });
+      },
+    });
+
+  const handleToggleCompleteLesson = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (completed) return notCompleteLesson();
+
+    completeLesson();
+  };
+
+  const isLoading = isCompletingLesson || isNotCompletingLesson;
 
   return (
     <Link
@@ -26,8 +73,10 @@ export function LessonItem({ lesson }: LessonItemProps) {
     >
       <TooltipWrapper content={completed ? "Mark as unseen" : "Mark as seem"}>
         <button
+          onClick={handleToggleCompleteLesson}
+          disabled={isLoading}
           type="button"
-          className="group/lesson-button relative h-4 w-4 min-w-4"
+          className="group/lesson-button relative h-4 w-4 min-w-4 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <PrimaryIcon className="h-full w-full opacity-100 transition-all group-hover/lesson-button:opacity-0" />
           <SecondaryIcon className="absolute inset-0 h-full w-full opacity-0 transition-all group-hover/lesson-button:opacity-100" />
