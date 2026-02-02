@@ -41,6 +41,18 @@ export async function getCourses({ query, tags: rawTags }: GetCoursesPayload) {
   return courses;
 }
 
+export async function getCourseWithoutModulesAndLessons(courseSlug: string) {
+  const course = await prisma.course.findUnique({
+    where: {
+      slug: courseSlug,
+    },
+  });
+
+  if (!course) throw new Error("Course not found");
+
+  return course;
+}
+
 export async function getCourseBySlug(slug: string) {
   if (!slug) {
     return null;
