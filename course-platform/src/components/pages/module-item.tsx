@@ -1,16 +1,20 @@
-import type { CourseModuleWithLessons } from "@/@types/types";
+import type { CompletedLesson, CourseModuleWithLessons } from "@/@types/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { CircularProgress } from "../shared/circular-progress";
 import { cn, formatDuration } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { LessonItem } from "./lesson-item";
+import { useMemo } from "react";
 
 interface ModuleItemProps {
   courseModule: CourseModuleWithLessons;
+  completedLessons: CompletedLesson[];
 }
 
-export function ModuleItem({ courseModule }: ModuleItemProps) {
-  const moduleProgress = 100;
+export function ModuleItem({
+  courseModule,
+  completedLessons,
+}: ModuleItemProps) {
   const totalLessons = courseModule.lessons.length;
   const totalDuration = courseModule.lessons.reduce(
     (total, lesson) => total + lesson.durationInMs,
@@ -18,6 +22,19 @@ export function ModuleItem({ courseModule }: ModuleItemProps) {
   );
 
   const formattedDuration = formatDuration(totalDuration);
+
+  const completedLessonsIds: string[] = useMemo(
+    () => completedLessons.map((lesson) => lesson.lessonId),
+    [completedLessons],
+  );
+
+  const moduleProgress = useMemo(() => {
+    const completedLessonsCount = completedLessonsIds.filter((lessonId) => {
+      return courseModule.lessons.some((lesson) => lesson.id === lessonId);
+    }).length;
+
+    return Math.round((completedLessonsCount / totalLessons) * 100);
+  }, [completedLessonsIds, courseModule.lessons, totalLessons]);
 
   return (
     <Accordion.Item
@@ -53,7 +70,11 @@ export function ModuleItem({ courseModule }: ModuleItemProps) {
       <Accordion.Content className="data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown overflow-hidden">
         <div className="flex flex-col p-2">
           {courseModule.lessons.map((lesson) => (
-            <LessonItem key={lesson.id} lesson={lesson} />
+            <LessonItem
+              key={lesson.id}
+              lesson={lesson}
+              completed={completedLessonsIds.includes(lesson.id)}
+            />
           ))}
         </div>
       </Accordion.Content>
