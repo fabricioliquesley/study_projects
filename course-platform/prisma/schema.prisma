@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-  id          String  @id @default(cuid())
-  firstName   String
-  lastName    String?
-  email       String  @unique
-  clerkUserId String  @unique
-  imageUrl    String?
+  id               String            @id @default(cuid())
+  firstName        String
+  lastName         String?
+  email            String            @unique
+  clerkUserId      String            @unique
+  imageUrl         String?
+  completedLessons CompletedLesson[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,18 +48,19 @@ enum CourseLevel {
 }
 
 model Course {
-  id               String         @id @default(cuid())
+  id               String            @id @default(cuid())
   title            String
-  slug             String         @unique
+  slug             String            @unique
   description      String
   shortDescription String?
   thumbnailUrl     String?
   price            Int
   discountPrice    Int?
-  status           CourseStatus   @default(DRAFT)
-  level            CourseLevel    @default(BEGINNER)
+  status           CourseStatus      @default(DRAFT)
+  level            CourseLevel       @default(BEGINNER)
   tags             CourseTag[]
   modules          CourseModule[]
+  completedLessons CompletedLesson[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -83,13 +85,14 @@ model CourseModule {
 }
 
 model CourseLesson {
-  id           String @id @default(cuid())
-  title        String
-  description  String
-  videoId      String
-  durationInMs Int
-  order        Int
-  moduleId     String
+  id               String            @id @default(cuid())
+  title            String
+  description      String
+  videoId          String
+  durationInMs     Int
+  order            Int
+  moduleId         String
+  completedLessons CompletedLesson[]
 
   module CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
@@ -97,4 +100,20 @@ model CourseLesson {
   updatedAt DateTime @updatedAt
 
   @@map("course_lessons")
+}
+
+model CompletedLesson {
+  id       String @id @default(cuid())
+  lessonId String
+  courseId String
+  userId   String
+
+  lesson CourseLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  course Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("completed_lessons")
 }
