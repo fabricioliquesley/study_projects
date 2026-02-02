@@ -6,6 +6,7 @@ import { shadcn } from "@clerk/themes";
 // import { ptBR } from "@clerk/localizations";
 
 import "@/styles/globals.css";
+import { ClientProviders } from "@/components/shared/client-providers";
 
 const nunito = Nunito({
   variable: "--font-nunito-sans",
@@ -27,7 +28,7 @@ export default function RootLayout({
         <body
           className={cn(nunito.variable, "font-nunito-sans dark antialiased")}
         >
-          {children}
+          <ClientProviders>{children}</ClientProviders>
         </body>
       </html>
     </ClerkProvider>
