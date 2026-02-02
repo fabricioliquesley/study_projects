@@ -10,6 +10,14 @@ export type CourseWithTagsAndModules = Course & {
   modules: Module[];
 };
 
+export type ModuleWithLessons = Module & {
+  lessons: Lesson[];
+};
+
+export type CourseWithModulesAndLessons = Course & {
+  modules: ModuleWithLessons[];
+};
+
 export type CourseModuleWithLessons = Module & {
   lessons: Lesson[];
 };
