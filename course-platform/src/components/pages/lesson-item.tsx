@@ -22,13 +22,13 @@ export function LessonItem({ lesson, completed }: LessonItemProps) {
   const params = useParams();
   const queryClient = useQueryClient();
 
-  const currentLessonId = "cmkyrpvmh0030rvsbf8ux9jyu";
+  const currentLessonId = params.lessonId as string;
+  const courseSlug = params.slug as string;
 
   const PrimaryIcon = completed ? CircleCheckBig : Video;
   const SecondaryIcon = completed ? CircleX : CircleCheckBig;
 
   const lessonId = lesson.id;
-  const courseSlug = params.slug as string;
 
   const { mutate: completeLesson, isPending: isCompletingLesson } = useMutation(
     {
@@ -64,7 +64,7 @@ export function LessonItem({ lesson, completed }: LessonItemProps) {
 
   return (
     <Link
-      href={`/course/course-slug/${lesson.moduleId}/lesson/${lesson.id}`}
+      href={`/courses/${courseSlug}/${lesson.moduleId}/lesson/${lesson.id}`}
       className={cn(
         "text-muted-foreground hover:bg-muted/50 flex items-center gap-2 rounded-md p-2 text-sm transition-all",
         lesson.id === currentLessonId && "text-white",
