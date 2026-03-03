@@ -29,3 +29,9 @@ export function formatPrice(price: number) {
     currency: "USD",
   });
 }
+
+export function formatName(firstName: string, lastName?: string | null) {
+  if (!lastName) return firstName;
+
+  return `${firstName} ${lastName}`;
+}
