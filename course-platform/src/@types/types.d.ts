@@ -4,6 +4,8 @@ export type Module = import("@/generated/prisma/client").CourseModule;
 export type Lesson = import("@/generated/prisma/client").CourseLesson;
 export type CompletedLesson =
   import("@/generated/prisma/client").CompletedLesson;
+export type LessonComment = import("@/generated/prisma/client").LessonComment;
+export type User = import("@/generated/prisma/client").User;
 
 export type CourseWithTagsAndModules = Course & {
   tags: Tag[];
@@ -20,4 +22,9 @@ export type CourseWithModulesAndLessons = Course & {
 
 export type CourseModuleWithLessons = Module & {
   lessons: Lesson[];
+};
+
+export type LessonCommentWithUserAndReplies = LessonComment & {
+  user: User;
+  commentReplies?: LessonCommentWithUserAndReplies[];
 };
