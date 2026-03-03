@@ -22,7 +22,21 @@ const commentSchema = z.object({
 
 type FormData = z.infer<typeof commentSchema>;
 
-export function CommentInput() {
+type CommentInputProps = {
+  parentCommentId?: string;
+  autoFocus?: boolean;
+  className?: string;
+  onCancel?: () => void;
+  onSuccess?: () => void;
+};
+
+export function CommentInput({
+  parentCommentId,
+  autoFocus,
+  onCancel,
+  onSuccess,
+  className,
+}: CommentInputProps) {
   const params = useParams();
 
   const courseSlug = params.slug as string;
@@ -48,6 +62,8 @@ export function CommentInput() {
 
       reset();
 
+      if (onSuccess) onSuccess();
+
       toast.success("Comment created successfully");
     },
     onError: () => {
@@ -60,7 +76,7 @@ export function CommentInput() {
       courseSlug,
       lessonId,
       content: data.content,
-      parentId: undefined,
+      parentId: parentCommentId,
     });
   };
 
@@ -73,15 +89,23 @@ export function CommentInput() {
         name="content"
         render={({ field }) => (
           <Textarea
+            autoFocus={autoFocus}
             {...field}
             placeholder="Leave your comment"
             className="min-h-[100px]"
           />
         )}
       />
-      <Button type="submit" disabled={isPending}>
-        Post Comment
-      </Button>
+      <div className="flex gap-2">
+        {onCancel && (
+          <Button variant={"outline"} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button type="submit" disabled={isPending}>
+          Post Comment
+        </Button>
+      </div>
     </form>
   );
 }
