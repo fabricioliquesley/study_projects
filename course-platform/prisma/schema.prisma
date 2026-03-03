@@ -16,6 +16,7 @@ model User {
   clerkUserId      String            @unique
   imageUrl         String?
   completedLessons CompletedLesson[]
+  lessonComments   LessonComment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -93,6 +94,7 @@ model CourseLesson {
   order            Int
   moduleId         String
   completedLessons CompletedLesson[]
+  lessonComments   LessonComment[]
 
   module CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
@@ -116,4 +118,22 @@ model CompletedLesson {
   updatedAt DateTime @updatedAt
 
   @@map("completed_lessons")
+}
+
+model LessonComment {
+  id             String          @id @default(cuid())
+  lessonId       String
+  userId         String
+  content        String
+  parentId       String?
+  commentReplies LessonComment[] @relation("CommentReplies")
+
+  lesson CourseLesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent LessonComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("lesson_comments")
 }
