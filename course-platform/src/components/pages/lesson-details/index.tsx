@@ -1,5 +1,6 @@
 import { Lesson } from "@/@types/types";
 import { LessonPlayer } from "./lesson-player";
+import { LessonComments } from "./comments";
 
 interface LessonDetailsProps {
   lesson: Lesson;
@@ -13,6 +14,8 @@ export function LessonDetails({ lesson, nextLesson }: LessonDetailsProps) {
 
       <div className="flex flex-col gap-6 p-6">
         <p className="text-muted-foreground">{lesson.description}</p>
+
+        <LessonComments />
       </div>
     </>
   );
