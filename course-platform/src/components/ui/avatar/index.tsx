@@ -15,7 +15,7 @@ export const Avatar = ({ src, fallback, className }: AvatarProps) => {
   return (
     <AvatarRoot className={cn("h-8 w-8 rounded-lg", className)}>
       <AvatarImage src={src ?? undefined} />
-      <AvatarFallback className="rounded-lg" />
+      <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
     </AvatarRoot>
   );
 };
