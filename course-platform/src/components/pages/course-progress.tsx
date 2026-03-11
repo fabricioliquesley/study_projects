@@ -9,13 +9,16 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/constants/query-keys";
 import { getCourseProgress } from "@/actions/course-progress";
+import { CheckoutDialog } from "./checkout-dialog";
+import { useState } from "react";
 
 interface CourseProgressProps {
   course: Course;
 }
 
 export const CourseProgress = ({ course }: CourseProgressProps) => {
-  const hasCourse = true;
+  const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
+  const hasCourse = false;
 
   const { data: courseProgress } = useQuery({
     queryKey: queryKeys.courseProgress(course.slug),
@@ -58,12 +61,21 @@ export const CourseProgress = ({ course }: CourseProgressProps) => {
             {formatPrice(course.discountPrice || course.price)}
           </p>
 
-          <Button className="mt-2 h-auto w-full py-3 text-xl font-bold text-white">
+          <Button
+            className="mt-2 h-auto w-full py-3 text-xl font-bold text-white"
+            onClick={() => setShowCheckoutDialog(true)}
+          >
             Buy now
             <ShoppingCart />
           </Button>
         </div>
       )}
+
+      <CheckoutDialog
+        open={showCheckoutDialog}
+        setOpen={setShowCheckoutDialog}
+        course={course}
+      />
     </aside>
   );
 };
