@@ -1,5 +1,7 @@
 "use client";
 
+import "react-credit-cards-2/dist/es/styles-compiled.css";
+
 import { Course } from "@/@types/types";
 import { Dialog } from "../../ui/dialog";
 import { useState } from "react";
@@ -22,6 +24,10 @@ export function CheckoutDialog({ open, setOpen, course }: CheckoutDialogProps) {
     setStep((prevStep: number) => prevStep + 1);
   };
 
+  const handleBack = () => {
+    setStep((prevStep: number) => prevStep - 1);
+  };
+
   const steps = {
     step1: (
       <ChosePaymentMethod
@@ -30,7 +36,7 @@ export function CheckoutDialog({ open, setOpen, course }: CheckoutDialogProps) {
         handleContinue={handleContinue}
       />
     ),
-    step2: renderPaymentForm({ paymentMethod }),
+    step2: renderPaymentForm({ paymentMethod, onBack: handleBack }),
   };
 
   return (
@@ -88,14 +94,15 @@ function ChosePaymentMethod({
 
 type RenderPaymentForm = {
   paymentMethod: Method;
+  onBack: () => void;
 };
 
-function renderPaymentForm({ paymentMethod }: RenderPaymentForm) {
+function renderPaymentForm({ paymentMethod, onBack }: RenderPaymentForm) {
   switch (paymentMethod) {
     case "PIX":
       return <div>PIX</div>;
     case "CREDIT_CARD":
-      return <CreditCardForm />;
+      return <CreditCardForm onBack={onBack} />;
     default:
       return <div>Unknown payment method</div>;
   }
