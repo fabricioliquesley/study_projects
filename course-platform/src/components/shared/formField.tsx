@@ -4,18 +4,21 @@ import {
   ControllerRenderProps,
   FieldValues,
   Path,
-  UseFormReturn,
 } from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
+import { useFormContext } from "./formContext";
+import { useMask } from "@react-input/mask";
 
 type FormFieldProps<T extends FieldValues> = {
   name: Path<T>;
-  form: UseFormReturn<T>;
   label?: string;
   inputId?: string;
   className?: string;
-  maskRef?: React.Ref<HTMLInputElement>;
+  mask?: {
+    format: string;
+    replacement?: Record<string, RegExp>;
+  };
   placeholder: string;
   children?: (params: {
     field: ControllerRenderProps<T, Path<T>>;
@@ -25,14 +28,25 @@ type FormFieldProps<T extends FieldValues> = {
 
 export function FormField<T extends FieldValues>({
   name,
-  form,
   label,
   inputId,
   className,
-  maskRef,
+  mask,
   placeholder,
   children,
 }: FormFieldProps<T>) {
+  const form = useFormContext<T>();
+  let maskRef = undefined;
+
+  if (mask) {
+    maskRef = useMask({
+      mask: mask.format,
+      replacement: mask.replacement || {
+        _: /\d/,
+      },
+    });
+  }
+
   return (
     <Controller
       name={name}
