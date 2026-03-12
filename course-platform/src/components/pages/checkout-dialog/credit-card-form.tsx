@@ -8,27 +8,26 @@ import * as z from "zod";
 
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { useMask } from "@react-input/mask";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { creditCardCheckoutFormSchema } from "@/server/schemas/payment";
 import { Separator } from "@/components/ui/separator";
 import { Select } from "@/components/ui/select";
+import Cards from "react-credit-cards-2";
 
 type FormData = z.infer<typeof creditCardCheckoutFormSchema>;
 
-export function CreditCardForm() {
+type CreditCardFormProps = {
+  onBack: () => void;
+};
+
+export function CreditCardForm({ onBack }: CreditCardFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(creditCardCheckoutFormSchema),
     defaultValues: {
@@ -44,6 +43,10 @@ export function CreditCardForm() {
       postalCode: "",
     },
   });
+
+  const { handleSubmit, watch } = form;
+
+  const formValues = watch();
 
   function onSubmit(data: FormData) {
     toast("You submitted the following values:", {
@@ -67,11 +70,51 @@ export function CreditCardForm() {
     value: `${i + 1}`,
   }));
 
+  const cpfMaskRef = useMask({
+    mask: "___.___.___-__",
+    replacement: {
+      _: /\d/,
+    },
+  });
+
+  const phoneMaskRef = useMask({
+    mask: "+55 (__) _____-____",
+    replacement: {
+      _: /\d/,
+    },
+  });
+
+  const cardNumberMaskRef = useMask({
+    mask: "____ ____ ____ ____",
+    replacement: {
+      _: /\d/,
+    },
+  });
+
+  const cardValidThruMaskRef = useMask({
+    mask: "__/__",
+    replacement: {
+      _: /\d/,
+    },
+  });
+
+  const cepMaskRef = useMask({
+    mask: "_____-___",
+    replacement: {
+      _: /\d/,
+    },
+  });
+
   return (
-    <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+    <form id="form-rhf-demo" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center gap-4">
         <div>
-          <p>PREVIEW OF CREDIT CARD</p>
+          <Cards
+            number={formValues.cardNumber}
+            cvc={formValues.cardCvv}
+            expiry={formValues.cardValidThru}
+            name={formValues.name}
+          />
         </div>
       </div>
       <FieldGroup className="grid w-full flex-1 gap-2 sm:grid-cols-2">
@@ -104,6 +147,7 @@ export function CreditCardForm() {
               </FieldLabel>
               <Input
                 {...field}
+                ref={cpfMaskRef}
                 id="credit-card-form-cpf"
                 aria-invalid={fieldState.invalid}
                 placeholder="xxx.xxx.xxx-xx"
@@ -121,6 +165,7 @@ export function CreditCardForm() {
               <FieldLabel htmlFor="credit-card-form-phone">Phone</FieldLabel>
               <Input
                 {...field}
+                ref={phoneMaskRef}
                 id="credit-card-form-phone"
                 aria-invalid={fieldState.invalid}
                 placeholder="(xx) xxxxx-xxxx"
@@ -143,6 +188,7 @@ export function CreditCardForm() {
               </FieldLabel>
               <Input
                 {...field}
+                ref={cardNumberMaskRef}
                 id="credit-card-form-card-number"
                 aria-invalid={fieldState.invalid}
                 placeholder="xxxx xxxx xxxx xxxx"
@@ -162,6 +208,7 @@ export function CreditCardForm() {
               </FieldLabel>
               <Input
                 {...field}
+                ref={cardValidThruMaskRef}
                 id="credit-card-form-expiration-date"
                 aria-invalid={fieldState.invalid}
                 placeholder="xx/xx"
@@ -259,6 +306,7 @@ export function CreditCardForm() {
                 <FieldLabel htmlFor="credit-card-form-cep">CEP</FieldLabel>
                 <Input
                   {...field}
+                  ref={cepMaskRef}
                   id="credit-card-form-cep"
                   aria-invalid={fieldState.invalid}
                   placeholder="xxxxx-xxx"
@@ -274,7 +322,7 @@ export function CreditCardForm() {
       </FieldGroup>
 
       <div className="mt-6 flex items-center justify-between">
-        <Button variant={"outline"}>
+        <Button variant={"outline"} type="button" onClick={onBack}>
           <ArrowLeft />
           Back
         </Button>
