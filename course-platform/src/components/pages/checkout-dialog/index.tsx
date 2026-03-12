@@ -9,6 +9,7 @@ import { Method, paymentMethods } from "@/constants/payment-methods";
 import { Button } from "../../ui/button";
 import { cn } from "@/lib/utils";
 import { CreditCardForm } from "./credit-card-form";
+import { PixForm } from "./pix-form";
 
 type CheckoutDialogProps = {
   open: boolean;
@@ -100,7 +101,7 @@ type RenderPaymentForm = {
 function renderPaymentForm({ paymentMethod, onBack }: RenderPaymentForm) {
   switch (paymentMethod) {
     case "PIX":
-      return <div>PIX</div>;
+      return <PixForm onBack={onBack} />;
     case "CREDIT_CARD":
       return <CreditCardForm onBack={onBack} />;
     default:
