@@ -16,7 +16,6 @@ Guia de referência para manter consistência ao criar novos componentes na past
 
 Use `tailwind-variants` para definir todas as variantes do componente:
 
-```tsx
 import { tv, type VariantProps } from "tailwind-variants";
 
 const component = tv({
@@ -30,23 +29,19 @@ const component = tv({
     size: "md",
   },
 });
-```
 
 ### Merge de classes
 
 **Componentes com `tv()`:** passe `className` como propriedade na chamada da função `tv`, que já faz merge internamente:
 
-```tsx
 function Component({ variant, size, className, ...props }: ComponentProps) {
   return (
     <div className={component({ variant, size, className })} {...props} />
   );
 }
-```
 
 **Componentes sem `tv()`:** use `twMerge` para unir classes base com `className`:
 
-```tsx
 import { twMerge } from "tailwind-merge";
 
 function Component({ className, ...props }: ComponentProps) {
@@ -54,17 +49,16 @@ function Component({ className, ...props }: ComponentProps) {
     <div className={twMerge("base-classes here", className)} {...props} />
   );
 }
-```
 
 **NUNCA use interpolação de string** para unir `className`:
 
-```tsx
 // ERRADO
 className={`base-classes ${className ?? ""}`}
 
 // CERTO
 className={twMerge("base-classes", className)}
-```
+
+**Nota:** quando um sub-componente não possui variantes próprias, prefira `twMerge` simples em vez de criar um `tv()` inline dentro da função, para evitar recálculos desnecessários em renders.
 
 ### Cores — Tailwind `@theme` variables
 
@@ -73,25 +67,21 @@ O Tailwind v4 gera automaticamente classes utilitárias nativas a partir dessas 
 
 **Exemplo de definição em `@theme`:**
 
-```css
 @theme {
   --color-accent-green: #10b981;
   --color-bg-page: #0a0a0a;
   --color-text-primary: #fafafa;
   --color-border-primary: #2a2a2a;
 }
-```
 
 **Uso nos componentes — classes canônicas:**
 
-```
 bg-accent-green          // fundo verde
 text-text-primary        // texto primário
 border-border-primary    // borda
 bg-bg-page               // fundo da página
 text-accent-red          // texto vermelho
 bg-diff-added            // fundo de linha adicionada
-```
 
 **NUNCA use** a sintaxe `bg-(--color-accent-green)` ou `bg-[var(--color-accent-green)]`.
 Use sempre a classe canônica gerada pelo Tailwind (ex: `bg-accent-green`).
@@ -99,20 +89,16 @@ Use sempre a classe canônica gerada pelo Tailwind (ex: `bg-accent-green`).
 **Exceção:** atributos SVG como `stroke`, `fill`, `stopColor` não aceitam classes Tailwind.
 Nesses casos, use `var(--color-*)` diretamente:
 
-```tsx
 <circle stroke="var(--color-border-primary)" />
 <stop stopColor="var(--color-accent-green)" />
-```
 
 ### Cores nativas do Tailwind
 
 Quando a cor corresponde a uma utilidade nativa do Tailwind, **use a classe nativa** em vez de referenciar a variável customizada. Exemplos:
 
-```
 text-white           // em vez de text-[#ffffff]
 text-black           // em vez de text-[#000000]
 bg-transparent       // em vez de bg-[transparent]
-```
 
 ### Prefixos das variáveis de cor
 
@@ -155,7 +141,6 @@ Use **props simples** quando o componente é um primitivo atômico (`Button`, `B
 
 Use **named exports individuais** com prefixo do componente (nunca dot notation):
 
-```tsx
 import type { ComponentProps } from "react";
 import { tv } from "tailwind-variants";
 
@@ -204,21 +189,17 @@ export {
   type CardTitleProps,
   type CardDescriptionProps,
 };
-```
 
 **Uso:**
 
-```tsx
 <CardRoot>
   <Badge variant="critical">critical</Badge>
   <CardTitle>using var instead of const/let</CardTitle>
   <CardDescription>the var keyword is...</CardDescription>
 </CardRoot>
-```
 
 ## Estrutura do componente (primitivo simples)
 
-```tsx
 import type { ComponentProps } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
@@ -249,7 +230,220 @@ export {
   type MyComponentProps,
   type MyComponentVariants,
 };
-```
+
+## Elementos interativos com `forwardRef`
+
+Componentes que precisam receber refs (inputs, buttons, elementos interativos) devem usar `forwardRef` e incluir `displayName` para melhor suporte em ferramentas de desenvolvimento como React DevTools.
+
+import { forwardRef, type ComponentProps } from "react";
+import { tv, type VariantProps } from "tailwind-variants";
+
+const input = tv({
+  base: [...],
+  variants: { ... },
+  defaultVariants: { ... },
+});
+
+type InputVariants = VariantProps<typeof input>;
+type InputProps = ComponentProps<"input"> & InputVariants;
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ variant, size, className, ...props }, ref) => (
+    <input
+      ref={ref}
+      className={input({ variant, size, className })}
+      {...props}
+    />
+  )
+);
+
+Input.displayName = "Input";
+
+export {
+  Input,
+  input,
+  type InputProps,
+  type InputVariants,
+};
+
+**Usar `forwardRef` quando:**
+
+- O elemento é interativo (input, button, textarea, select)
+- O consumidor pode precisar acessar ou controlar o DOM diretamente
+- O componente embrulha um elemento HTML com comportamento
+
+**displayName é obrigatório** para componentes forwardRef, pois sem ele React exibirá `ForwardRef(Unknown)` no DevTools.
+
+## Estados visuais (disabled, loading, error)
+
+Componentes interativos devem suportar estados visuais consistentes usando `compoundVariants`:
+
+const button = tv({
+  base: "px-4 py-2 rounded font-medium transition",
+  variants: {
+    variant: {
+      primary: "bg-accent-green text-white",
+      secondary: "bg-border-primary text-text-primary",
+    },
+    disabled: {
+      true: "opacity-50 cursor-not-allowed pointer-events-none",
+      false: "",
+    },
+  },
+  compoundVariants: [
+    {
+      variant: "primary",
+      disabled: true,
+      class: "hover:bg-accent-green",
+    },
+  ],
+  defaultVariants: {
+    variant: "primary",
+    disabled: false,
+  },
+});
+
+type ButtonProps = ComponentProps<"button"> & VariantProps<typeof button>;
+
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant, disabled, className, ...props }, ref) => (
+    <button
+      ref={ref}
+      disabled={disabled}
+      className={button({ variant, disabled, className })}
+      {...props}
+    />
+  )
+);
+
+Button.displayName = "Button";
+
+export { Button, button, type ButtonProps };
+
+**Estados comuns a implementar:**
+
+| Estado | Quando usar | Exemplo |
+|--------|-----------|---------|
+| `disabled` | Elemento não interativo | Botão desabilitado, input bloqueado |
+| `loading` | Operação assíncrona em progresso | Spinner, skeleton, redução de opacidade |
+| `error` | Validação falhou ou erro ocorreu | Borda vermelha, ícone de erro, mensagem |
+| `success` | Ação completada com sucesso | Cor verde, ícone de checkmark |
+
+Use `compoundVariants` para combinar estados (ex: `disabled` + `primary` podem ter estilos diferentes).
+
+## Componentes controlados vs não-controlados
+
+Diferencie entre componentes **controlados** (estado gerenciado externamente) e **não-controlados** (estado interno).
+
+### Componentes não-controlados (recomendado para simplicidade)
+
+Use quando o componente gerencia seu próprio estado interno:
+
+type ToggleProps = ComponentProps<"button"> & {
+  defaultChecked?: boolean;
+  onToggle?: (checked: boolean) => void;
+};
+
+const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
+  ({ defaultChecked = false, onToggle, ...props }, ref) => {
+    const [checked, setChecked] = useState(defaultChecked);
+
+    const handleClick = () => {
+      const newState = !checked;
+      setChecked(newState);
+      onToggle?.(newState);
+    };
+
+    return (
+      <button
+        ref={ref}
+        onClick={handleClick}
+        aria-pressed={checked}
+        {...props}
+      />
+    );
+  }
+);
+
+Toggle.displayName = "Toggle";
+
+### Componentes controlados (quando necessário)
+
+Use quando o estado precisa ser sincronizado com o consumidor:
+
+type SelectProps = ComponentProps<"select"> & {
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+};
+
+const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  ({ value, onChange, options, ...props }, ref) => (
+    <select
+      ref={ref}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      {...props}
+    >
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  )
+);
+
+Select.displayName = "Select";
+
+**Diretriz:** prefira não-controlados quando possível (simplicidade). Use controlados para síncronia complexa entre componentes.
+
+## Acessibilidade
+
+Componentes devem ser acessíveis por padrão. Siga estas regras:
+
+### Elementos semânticos
+
+- Use `<button>` para ações, nunca `<div onClick>` simulando botão
+- Use `<a>` para navegação, nunca `<button>` com rota
+- Use `<label htmlFor="id">` para associar labels a inputs
+- Estruture com heading hierarchy apropriada (`<h1>` > `<h2>` > `<h3>`)
+
+### ARIA attributes
+
+Adicione atributos ARIA quando o conteúdo visual não for suficiente:
+
+// Input com label implícito
+<label htmlFor="search">
+  Pesquisar
+  <input id="search" type="text" />
+</label>
+
+// Botão com ícone (sem texto)
+<button aria-label="Fechar modal">
+  <CloseIcon />
+</button>
+
+// Toggle/Switch
+<button aria-pressed={checked} role="switch">
+  Ativar notificações
+</button>
+
+// Descrição de erro
+<input
+  id="email"
+  type="email"
+  aria-describedby="email-error"
+/>
+<span id="email-error" className="text-error">
+  Email inválido
+</span>
+
+### Navegação por teclado
+
+- Elementos interativos devem ser focáveis via `Tab`
+- `forwardRef` facilita capture de refs para controle programático
+- Use `role="button"` apenas se for um `<div>` simulando botão (evite isso)
 
 ## Checklist para novos componentes
 
@@ -266,4 +460,8 @@ export {
 - [ ] Sem sintaxe `bg-(--color-*)` — usar classe canônica
 - [ ] Composição (sub-componentes) para componentes com 2+ áreas de conteúdo distintas
 - [ ] Props simples para primitivos atômicos e configuração numérica/funcional
+- [ ] **Usar `forwardRef` para elementos interativos** e incluir `displayName`
+- [ ] **Implementar estados visuais** (`disabled`, `loading`, `error`) com `compoundVariants` quando aplicável
+- [ ] **Escolher entre controlado vs não-controlado** e documentar claramente
+- [ ] **Seguir padrões de acessibilidade** (elementos semânticos, ARIA, navegação por teclado)
 - [ ] Adicionar variante na página de exemplos (`/components`)
