@@ -27,7 +27,7 @@ const thumb = tv({
   ],
   variants: {
     checked: {
-      true: "translate-x-5 bg-white",
+      true: "translate-x-5 bg-bg-page",
       false: "translate-x-0",
     },
   },
@@ -40,16 +40,20 @@ type ToggleVariants = VariantProps<typeof toggle>;
 
 type ToggleProps = Omit<
   ComponentProps<typeof Switch.Switch.Root>,
-  "className"
+  "className" | "onCheckedChange"
 > &
-  ToggleVariants & { className?: string };
+  ToggleVariants & {
+    className?: string;
+    onCheckedChange?: (checked: boolean) => void;
+  };
 
 const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
-  ({ checked, className, ...props }, ref) => {
+  ({ checked, className, onCheckedChange, ...props }, ref) => {
     return (
       <Switch.Switch.Root
         ref={ref}
         checked={checked}
+        onCheckedChange={onCheckedChange}
         className={toggle({ checked: checked as boolean, className })}
         {...props}
       >
