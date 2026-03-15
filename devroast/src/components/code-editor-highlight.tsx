@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { codeToHtml } from "shiki";
+import { MAX_CHARS } from "@/constants";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type Highlighter, createHighlighter } from "shiki";
 
 const LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
@@ -26,14 +27,46 @@ const LANGUAGES = [
 
 type Language = (typeof LANGUAGES)[number]["value"];
 
-interface CodeEditorHighlightProps {
-  value: string;
-  onChange: (value: string) => void;
-  language: Language;
-  onLanguageChange?: (language: Language) => void;
-  filename?: string;
-  showHeader?: boolean;
-  showLanguageSelector?: boolean;
+// Singleton — instância criada uma única vez e reutilizada
+let _highlighter: Highlighter | null = null;
+let _highlighterPromise: Promise<Highlighter> | null = null;
+
+async function getHighlighter(): Promise<Highlighter> {
+  if (_highlighter) return _highlighter;
+  if (!_highlighterPromise) {
+    _highlighterPromise = createHighlighter({
+      langs: LANGUAGES.map((l) => l.value),
+      themes: ["vesper"],
+    }).then((h) => {
+      _highlighter = h;
+      return h;
+    });
+  }
+  return _highlighterPromise;
+}
+
+export async function highlightCode(
+  code: string,
+  language: Language,
+): Promise<string> {
+  if (!code.trim()) return "";
+  try {
+    const highlighter = await getHighlighter();
+    return highlighter.codeToHtml(code, { lang: language, theme: "vesper" });
+  } catch {
+    const highlighter = await getHighlighter();
+    return highlighter.codeToHtml(code, { lang: "text", theme: "vesper" });
+  }
+}
+
+// Debounce hook — evita highlight a cada keystroke
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
 }
 
 function detectLanguage(code: string): Language {
@@ -71,7 +104,7 @@ function detectLanguage(code: string): Language {
     return "ruby";
   if (/^(select|insert|update|delete|create|alter|drop)\s/im.test(trimmed))
     return "sql";
-  if (/^\{/m.test(trimmed) && /"[^"]+"\s*:/m.test(trimmed)) return "json";
+  if (/^\{/m.test(trimmed) && /"[^"]+": /m.test(trimmed)) return "json";
   if (/^(---|\w+:)/m.test(trimmed)) return "yaml";
   if (/^(#!|\b(bash|sh|zsh|echo|ls|cd|grep|awk|sed)\b)/m.test(trimmed))
     return "bash";
@@ -80,25 +113,16 @@ function detectLanguage(code: string): Language {
   return "javascript";
 }
 
-export async function highlightCode(
-  code: string,
-  language: Language,
-): Promise<string> {
-  if (!code.trim()) return "";
-
-  try {
-    const html = await codeToHtml(code.trim(), {
-      lang: language,
-      theme: "vesper",
-    });
-    return html;
-  } catch {
-    const html = await codeToHtml(code.trim(), {
-      lang: "text",
-      theme: "vesper",
-    });
-    return html;
-  }
+interface CodeEditorHighlightProps {
+  value: string;
+  onChange: (value: string) => void;
+  language: Language;
+  onLanguageChange?: (language: Language) => void;
+  filename?: string;
+  showHeader?: boolean;
+  showLanguageSelector?: boolean;
+  maxLength?: number;
+  onOverLimit?: (isOver: boolean) => void;
 }
 
 export function CodeEditorHighlight({
@@ -109,27 +133,90 @@ export function CodeEditorHighlight({
   filename,
   showHeader = true,
   showLanguageSelector = true,
+  maxLength = MAX_CHARS,
+  onOverLimit,
 }: CodeEditorHighlightProps) {
   const [highlightedHtml, setHighlightedHtml] = useState("");
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
+
+  const charCount = value.length;
+  const isOverLimit = charCount > maxLength;
+  const isNearLimit = charCount >= maxLength * 0.8;
+
+  // Debounce no value — language muda raramente e re-destaca imediatamente
+  const debouncedValue = useDebounce(value, 300);
+
+  // Cleanup flag evita race condition entre chamadas concorrentes
   useEffect(() => {
-    if (!value.trim()) {
+    if (!debouncedValue.trim()) {
       setHighlightedHtml("");
       return;
     }
+    let cancelled = false;
+    highlightCode(debouncedValue, language).then((html) => {
+      if (!cancelled) setHighlightedHtml(html);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedValue, language]);
 
-    highlightCode(value, language).then(setHighlightedHtml);
-  }, [value, language]);
+  // Notifica o pai sempre que o estado de limite muda
+  useEffect(() => {
+    onOverLimit?.(isOverLimit);
+  }, [isOverLimit, onOverLimit]);
+
+  // Sincroniza scroll do highlight e dos line numbers com a textarea
+  const syncScroll = useCallback(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    if (highlightRef.current) {
+      highlightRef.current.scrollTop = ta.scrollTop;
+      highlightRef.current.scrollLeft = ta.scrollLeft;
+    }
+    if (lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = ta.scrollTop;
+    }
+  }, []);
+
+  // Tab insere 2 espaços em vez de perder o foco
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const el = e.currentTarget;
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const newValue = `${value.substring(0, start)}  ${value.substring(end)}`;
+        onChange(newValue);
+        requestAnimationFrame(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = start + 2;
+            textareaRef.current.selectionEnd = start + 2;
+          }
+        });
+      }
+    },
+    [value, onChange],
+  );
 
   const lines = value.split("\n");
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLang = e.target.value as Language;
-    onLanguageChange?.(newLang);
+    onLanguageChange?.(e.target.value as Language);
   };
 
+  const counterColor = isOverLimit
+    ? "text-accent-red font-medium"
+    : isNearLimit
+      ? "text-accent-amber"
+      : "text-text-tertiary";
+
   return (
-    <div className="flex flex-col rounded-m border border-border-primary overflow-hidden">
+    <div className="flex flex-col rounded-md border border-border-primary overflow-hidden">
       {showHeader && (
         <div className="flex h-10 items-center justify-between border-b border-border-primary px-4">
           <div className="flex items-center gap-3">
@@ -152,7 +239,6 @@ export function CodeEditorHighlight({
                 ))}
               </select>
             )}
-
             {filename && (
               <span className="font-mono text-xs text-text-tertiary">
                 {filename}
@@ -162,38 +248,66 @@ export function CodeEditorHighlight({
         </div>
       )}
 
-      <div className="flex h-[360px] overflow-auto bg-bg-input">
-        <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0">
-          {/* biome-ignore lint: line numbers are stable for display */}
+      {/* overflow-hidden no container — scroll controlado pela textarea */}
+      <div className="flex h-[360px] overflow-hidden bg-bg-input">
+
+        {/* line numbers com overflow-hidden; scroll sincronizado via JS */}
+        <div
+          ref={lineNumbersRef}
+          className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0 overflow-hidden select-none"
+        >
           {lines.map((_, idx) => (
             <span
-              // biome-ignore lint: line numbers are stable for display
               key={`ln-${idx + 1}`}
               className="font-mono text-xs leading-6 text-text-tertiary ml-3"
             >
               {idx + 1}
             </span>
           ))}
-          {lines.length === 0 && (
-            <span className="font-mono text-xs leading-6 text-text-tertiary ml-3">
-              1
-            </span>
-          )}
         </div>
 
-        <div className="flex-1 relative min-h-0 bg-bg-input">
+        <div className="flex-1 relative overflow-hidden bg-bg-input">
+          {/*
+           * pointer-events-none impede que o <pre> do Shiki intercepte
+           * cliques e foco que pertencem à textarea.
+           * [&_pre]:!bg-transparent sobrescreve o background inline
+           * que o Shiki injeta no <pre>, expondo o bg do container.
+           */}
           <div
-            className="w-full p-3 font-mono text-[13px] leading-6"
+            ref={highlightRef}
+            className="absolute inset-0 p-3 font-mono text-[13px] leading-6 overflow-hidden pointer-events-none select-none [&_pre]:!bg-transparent [&_pre]:m-0 [&_pre]:p-0 [&_pre]:font-mono [&_pre]:text-[13px] [&_pre]:leading-6"
             // biome-ignore lint: shiki returns safe HTML
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
+
+          {/*
+           * z-10 garante que a textarea fique sobre o <pre> do Shiki
+           * (que cria um novo stacking context), permitindo edição.
+           * whitespace-pre preserva indentação sem quebrar linhas.
+           */}
           <textarea
+            ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="absolute inset-0 w-full resize-none overflow-hidden bg-transparent p-3 font-mono text-[13px] leading-6 text-transparent outline-none placeholder:text-text-tertiary caret-white"
+            onScroll={syncScroll}
+            onKeyDown={handleKeyDown}
+            className="absolute inset-0 z-10 w-full h-full resize-none bg-transparent p-3 font-mono text-[13px] leading-6 text-transparent caret-white outline-none placeholder:text-text-tertiary overflow-auto whitespace-pre"
             placeholder="// paste your code here..."
             spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
           />
+
+          {/* Counter — canto inferior direito, z-20 para ficar acima da textarea */}
+          <div className="absolute bottom-0 right-0 z-20 px-3 py-1.5 pointer-events-none">
+            <span
+              className={`font-mono text-xs tabular-nums transition-colors duration-200 ${counterColor}`}
+            >
+              {charCount.toLocaleString("pt-BR")} /{" "}
+              {maxLength.toLocaleString("pt-BR")}
+            </span>
+          </div>
         </div>
       </div>
     </div>
