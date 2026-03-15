@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { CodeEditor } from "@/components/code-editor";
+import { useEffect, useState } from "react";
+import {
+  CodeEditorHighlight,
+  detectLanguage,
+  type Language,
+} from "@/components/code-editor-highlight";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 
@@ -15,12 +19,26 @@ const LEADERBOARD_DATA = [
 function CodeInputSection() {
   const [code, setCode] = useState("");
   const [roastMode, setRoastMode] = useState(true);
+  const [language, setLanguage] = useState<Language>("javascript");
 
   const isEmpty = code.trim() === "";
 
+  useEffect(() => {
+    if (code.trim()) {
+      const detected = detectLanguage(code);
+      setLanguage(detected);
+    }
+  }, [code]);
+
   return (
     <div className="flex w-[960px] flex-col gap-4">
-      <CodeEditor value={code} onChange={setCode} showHeader />
+      <CodeEditorHighlight
+        value={code}
+        onChange={setCode}
+        language={language}
+        onLanguageChange={setLanguage}
+        showHeader
+      />
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -124,7 +142,8 @@ export default function HomePage() {
           </span>
         </h1>
         <p className="font-mono text-sm text-text-secondary">
-          {/* drop your code below and we'll rate it — brutally honest or full roast mode */}
+          {"//"} drop your code below and we&apos;ll rate it — brutally honest
+          or full roast mode
         </p>
       </div>
 
