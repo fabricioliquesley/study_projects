@@ -55,4 +55,8 @@
   button {
     @apply cursor-pointer;
   }
+
+  .shiki {
+    background-color: var(--color-bg-input) !important;
+  }
 }
