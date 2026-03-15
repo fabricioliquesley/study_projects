@@ -5,6 +5,7 @@ interface CodeBlockProps {
   language?: string;
   filename?: string;
   showHeader?: boolean;
+  height?: number;
 }
 
 const LANGUAGES = [
@@ -36,6 +37,7 @@ export async function CodeBlock({
   language = "javascript",
   filename,
   showHeader = true,
+  height,
 }: CodeBlockProps) {
   const normalizedLanguage = LANGUAGES.includes(
     language as (typeof LANGUAGES)[number],
@@ -51,7 +53,10 @@ export async function CodeBlock({
   const lines = code.trim().split("\n");
 
   return (
-    <div className="flex flex-col rounded-m border border-border-primary overflow-hidden">
+    <div
+      className="flex flex-col rounded-m border border-border-primary overflow-hidden"
+      style={height ? { height: `${height}px` } : undefined}
+    >
       {showHeader && (
         <div className="flex h-10 items-center justify-between border-b border-border-primary px-4">
           <div className="flex items-center gap-3">
@@ -66,20 +71,20 @@ export async function CodeBlock({
           )}
         </div>
       )}
-      <div className="flex bg-bg-input">
-        <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-3 text-center">
+      <div className="flex flex-1 bg-bg-input min-h-0">
+        <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center gap-1.5">
           {/* biome-ignore lint: line numbers are stable for code display */}
-          {lines.map((_, index) => (
+          {lines.map((line, index) => (
             <span
-              key={index}
-              className="font-mono text-xs leading-6 text-text-tertiary ml-3"
+              key={line + index}
+              className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
             >
               {index + 1}
             </span>
           ))}
         </div>
         <div
-          className="flex-1 overflow-x-auto p-3 font-mono text-[13px] leading-6"
+          className="flex-1 overflow-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
           // biome-ignore lint: shiki returns safe HTML
           dangerouslySetInnerHTML={{ __html: html }}
         />
