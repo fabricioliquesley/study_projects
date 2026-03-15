@@ -162,8 +162,8 @@ export function CodeEditorHighlight({
         </div>
       )}
 
-      <div className="flex max-h-[360px] overflow-auto bg-bg-input">
-        <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0 h-max">
+      <div className="flex h-[360px] overflow-auto bg-bg-input">
+        <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0">
           {/* biome-ignore lint: line numbers are stable for display */}
           {lines.map((_, idx) => (
             <span
@@ -181,7 +181,7 @@ export function CodeEditorHighlight({
           )}
         </div>
 
-        <div className="flex-1 relative bg-bg-input">
+        <div className="flex-1 relative min-h-0 bg-bg-input">
           <div
             className="w-full p-3 font-mono text-[13px] leading-6"
             // biome-ignore lint: shiki returns safe HTML
