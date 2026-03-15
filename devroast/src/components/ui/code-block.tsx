@@ -71,8 +71,8 @@ export async function CodeBlock({
           )}
         </div>
       )}
-      <div className="flex flex-1 bg-bg-input min-h-0">
-        <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center gap-1.5">
+      <div className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-auto">
+        <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
           {/* biome-ignore lint: line numbers are stable for code display */}
           {lines.map((line, index) => (
             <span
@@ -84,7 +84,7 @@ export async function CodeBlock({
           ))}
         </div>
         <div
-          className="flex-1 overflow-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
+          className="flex-1 overflow-x-hidden overflow-y-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
           // biome-ignore lint: shiki returns safe HTML
           dangerouslySetInnerHTML={{ __html: html }}
         />
