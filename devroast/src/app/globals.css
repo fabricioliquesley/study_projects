@@ -59,4 +59,23 @@
   .shiki {
     background-color: var(--color-bg-input) !important;
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-secondary);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-tertiary);
+  }
 }
