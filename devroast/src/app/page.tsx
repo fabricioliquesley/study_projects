@@ -9,6 +9,7 @@ import {
 } from "@/components/code-editor-highlight";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
+import { MAX_CHARS } from "@/constants";
 
 const LEADERBOARD_DATA = [
   { rank: 1, score: 1.2, code: "calculateTotal", language: "javascript" },
@@ -22,6 +23,7 @@ function CodeInputSection() {
   const [language, setLanguage] = useState<Language>("javascript");
 
   const isEmpty = code.trim() === "";
+  const isOverLimit = code.length > MAX_CHARS;
 
   useEffect(() => {
     if (code.trim()) {
@@ -55,7 +57,7 @@ function CodeInputSection() {
             {/* maximum sarcasm enabled */}
           </span>
         </div>
-        <Button variant="primary" size="lg" disabled={isEmpty}>
+        <Button variant="primary" size="lg" disabled={isEmpty || isOverLimit}>
           <span className="text-[#0a0a0a]">$ roast_my_code</span>
         </Button>
       </div>
