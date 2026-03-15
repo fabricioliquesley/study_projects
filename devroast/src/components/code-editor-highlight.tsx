@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 
 const LANGUAGES = [
@@ -111,8 +111,6 @@ export function CodeEditorHighlight({
   showLanguageSelector = true,
 }: CodeEditorHighlightProps) {
   const [highlightedHtml, setHighlightedHtml] = useState("");
-  const highlightRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!value.trim()) {
@@ -122,13 +120,6 @@ export function CodeEditorHighlight({
 
     highlightCode(value, language).then(setHighlightedHtml);
   }, [value, language]);
-
-  const handleScroll = () => {
-    if (highlightRef.current && textareaRef.current) {
-      highlightRef.current.scrollTop = textareaRef.current.scrollTop;
-      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
-    }
-  };
 
   const lines = value.split("\n");
 
@@ -171,8 +162,8 @@ export function CodeEditorHighlight({
         </div>
       )}
 
-      <div className="flex min-h-[360px] bg-bg-input">
-        <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0">
+      <div className="flex max-h-[360px] overflow-auto bg-bg-input">
+        <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface py-3 text-center shrink-0 h-max">
           {/* biome-ignore lint: line numbers are stable for display */}
           {lines.map((_, idx) => (
             <span
@@ -190,19 +181,16 @@ export function CodeEditorHighlight({
           )}
         </div>
 
-        <div className="flex-1 relative overflow-hidden bg-bg-input">
+        <div className="flex-1 relative bg-bg-input">
           <div
-            ref={highlightRef}
-            className="absolute inset-0 overflow-auto p-3 font-mono text-[13px] leading-6"
+            className="w-full p-3 font-mono text-[13px] leading-6"
             // biome-ignore lint: shiki returns safe HTML
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
           <textarea
-            ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            onScroll={handleScroll}
-            className="absolute inset-0 w-full h-full resize-none bg-transparent p-3 font-mono text-[13px] leading-6 text-transparent outline-none placeholder:text-text-tertiary caret-white"
+            className="absolute inset-0 w-full resize-none overflow-hidden bg-transparent p-3 font-mono text-[13px] leading-6 text-transparent outline-none placeholder:text-text-tertiary caret-white"
             placeholder="// paste your code here..."
             spellCheck={false}
           />
