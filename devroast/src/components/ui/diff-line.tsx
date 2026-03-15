@@ -30,7 +30,11 @@ function DiffLine({ type, className, children, ...props }: DiffLineProps) {
         : "text-text-tertiary";
 
   const codeColor =
-    type === "added" ? "text-text-primary" : "text-text-secondary";
+    type === "added" 
+      ? "text-accent-green" 
+      : type === "removed" 
+        ? "text-accent-red" 
+        : "text-text-secondary";
 
   return (
     <div className={diffLine({ type, className })} {...props}>
