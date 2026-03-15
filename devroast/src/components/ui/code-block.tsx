@@ -1,11 +1,18 @@
 import { codeToHtml } from "shiki";
+import { DiffLine } from "./diff-line";
+
+interface DiffLineInput {
+  type: "added" | "removed" | "unchanged";
+  content: string;
+}
 
 interface CodeBlockProps {
-  code: string;
+  code?: string;
   language?: string;
   filename?: string;
   showHeader?: boolean;
   height?: number;
+  diffLines?: DiffLineInput[];
 }
 
 const LANGUAGES = [
@@ -33,11 +40,12 @@ const LANGUAGES = [
 ] as const;
 
 export async function CodeBlock({
-  code,
+  code = "",
   language = "javascript",
   filename,
   showHeader = true,
   height,
+  diffLines,
 }: CodeBlockProps) {
   const normalizedLanguage = LANGUAGES.includes(
     language as (typeof LANGUAGES)[number],
@@ -45,12 +53,14 @@ export async function CodeBlock({
     ? language
     : "javascript";
 
-  const html = await codeToHtml(code.trim(), {
-    lang: normalizedLanguage,
-    theme: "vesper",
-  });
+  const html = diffLines
+    ? ""
+    : await codeToHtml(code.trim(), {
+        lang: normalizedLanguage,
+        theme: "vesper",
+      });
 
-  const lines = code.trim().split("\n");
+  const lines = diffLines ? diffLines : code.trim().split("\n");
 
   return (
     <div
@@ -73,24 +83,41 @@ export async function CodeBlock({
       )}
       <div className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-auto">
         <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
-          {/* biome-ignore lint: line numbers are stable for code display */}
-          {lines.map((line, index) => (
+          {lines.map((_, index) => (
             <span
-              key={line + index}
+              key={`ln-${index}`}
               className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
             >
               {index + 1}
             </span>
           ))}
         </div>
-        <div
-          className="flex-1 overflow-x-hidden overflow-y-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
-          // biome-ignore lint: shiki returns safe HTML
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        {diffLines ? (
+          <div className="flex-1 overflow-x-hidden overflow-y-auto py-[10px] px-4 font-mono text-[13px] leading-6 gap-1.5">
+            {diffLines.map((line, index) => (
+              <DiffLine
+                key={`diff-${index}`}
+                type={
+                  (line.type === "unchanged" ? "context" : line.type) as
+                    | "added"
+                    | "removed"
+                    | "context"
+                }
+              >
+                {line.content}
+              </DiffLine>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="flex-1 overflow-x-hidden overflow-y-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
+            // biome-ignore lint: shiki returns safe HTML
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        )}
       </div>
     </div>
   );
 }
 
-export type { CodeBlockProps };
+export type { CodeBlockProps, DiffLine };
