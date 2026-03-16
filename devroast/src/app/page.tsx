@@ -1,69 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  CodeEditorHighlight,
-  detectLanguage,
-  type Language,
-} from "@/components/code-editor-highlight";
-import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
-import { MAX_CHARS } from "@/constants";
+import { CodeInputSection } from "@/components/code-input-section";
+import { Stats } from "@/components/stats/stats";
 
 const LEADERBOARD_DATA = [
   { rank: 1, score: 1.2, code: "calculateTotal", language: "javascript" },
   { rank: 2, score: 2.8, code: "fetchUserData", language: "typescript" },
   { rank: 3, score: 3.1, code: "processPayment", language: "python" },
 ];
-
-function CodeInputSection() {
-  const [code, setCode] = useState("");
-  const [roastMode, setRoastMode] = useState(true);
-  const [language, setLanguage] = useState<Language>("javascript");
-
-  const isEmpty = code.trim() === "";
-  const isOverLimit = code.length > MAX_CHARS;
-
-  useEffect(() => {
-    if (code.trim()) {
-      const detected = detectLanguage(code);
-      setLanguage(detected);
-    }
-  }, [code]);
-
-  return (
-    <div className="flex w-[960px] flex-col gap-4">
-      <CodeEditorHighlight
-        value={code}
-        onChange={setCode}
-        language={language}
-        onLanguageChange={setLanguage}
-        showHeader
-      />
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <Toggle
-              checked={roastMode}
-              onCheckedChange={(checked) => setRoastMode(checked)}
-            />
-            <span className="font-mono text-[13px] text-accent-green">
-              roast mode
-            </span>
-          </div>
-          <span className="font-mono text-xs text-text-tertiary">
-            {/* maximum sarcasm enabled */}
-          </span>
-        </div>
-        <Button variant="primary" size="lg" disabled={isEmpty || isOverLimit}>
-          <span className="text-[#0a0a0a]">$ roast_my_code</span>
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 function LeaderboardPreview() {
   return (
@@ -151,15 +94,7 @@ export default function HomePage() {
 
       <CodeInputSection />
 
-      <div className="flex justify-center gap-6">
-        <span className="font-mono text-xs text-text-tertiary">
-          2,847 codes roasted
-        </span>
-        <span className="font-mono text-xs text-text-tertiary">·</span>
-        <span className="font-mono text-xs text-text-tertiary">
-          avg score: 4.2/10
-        </span>
-      </div>
+      <Stats />
 
       <div className="h-[60px]" />
 

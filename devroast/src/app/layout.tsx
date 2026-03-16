@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
+import { TRPCProvider } from "@/trpc/react";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -44,8 +45,10 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} bg-bg-page font-mono text-text-primary antialiased`}
       >
-        <Navbar />
-        {children}
+        <TRPCProvider>
+          <Navbar />
+          {children}
+        </TRPCProvider>
       </body>
     </html>
   );
