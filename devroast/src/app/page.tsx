@@ -1,80 +1,8 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import { CodeInputSection } from "@/components/code-input-section";
+import { ShameLeaderboard } from "@/components/leaderboard/shame-leaderboard";
+import { ShameLeaderboardSkeleton } from "@/components/leaderboard/shame-leaderboard-skeleton";
 import { Stats } from "@/components/stats/stats";
-
-const LEADERBOARD_DATA = [
-  { rank: 1, score: 1.2, code: "calculateTotal", language: "javascript" },
-  { rank: 2, score: 2.8, code: "fetchUserData", language: "typescript" },
-  { rank: 3, score: 3.1, code: "processPayment", language: "python" },
-];
-
-function LeaderboardPreview() {
-  return (
-    <div className="flex w-[960px] flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-sm font-bold text-accent-green">
-            {"//"}
-          </span>
-          <span className="font-mono text-sm font-bold text-text-primary">
-            shame_leaderboard
-          </span>
-        </div>
-        <Link
-          href="/leaderboard"
-          className="flex items-center gap-1 rounded border border-border-primary px-3 py-1.5 font-mono text-xs text-text-secondary hover:bg-bg-elevated transition-colors"
-        >
-          $ view_all &gt;&gt;
-        </Link>
-      </div>
-
-      <p className="font-mono text-[13px] text-text-tertiary">
-        {"//"} the worst code on the internet, ranked by shame
-      </p>
-
-      <div className="flex flex-col rounded border border-border-primary">
-        <div className="flex h-10 items-center bg-bg-surface px-5">
-          <span className="w-12 font-mono text-xs text-text-tertiary">
-            rank
-          </span>
-          <span className="w-16 font-mono text-xs text-text-tertiary">
-            score
-          </span>
-          <span className="flex-1 font-mono text-xs text-text-tertiary">
-            code
-          </span>
-          <span className="w-24 font-mono text-xs text-text-tertiary">
-            lang
-          </span>
-        </div>
-
-        {LEADERBOARD_DATA.map((item) => (
-          <div
-            key={item.rank}
-            className="flex items-center px-5 py-4 border-t border-border-primary"
-          >
-            <span className="w-12 font-mono text-xs text-text-primary">
-              #{item.rank}
-            </span>
-            <span className="w-16 font-mono text-xs text-accent-red">
-              {item.score}/10
-            </span>
-            <span className="flex-1 font-mono text-xs text-text-primary">
-              {item.code}
-            </span>
-            <span className="w-24 font-mono text-xs text-text-secondary">
-              {item.language}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <p className="px-4 text-center font-mono text-xs text-text-tertiary">
-        showing top 3 of 2,847 · view full leaderboard &gt;&gt;
-      </p>
-    </div>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -98,7 +26,9 @@ export default function HomePage() {
 
       <div className="h-[60px]" />
 
-      <LeaderboardPreview />
+      <Suspense fallback={<ShameLeaderboardSkeleton />}>
+        <ShameLeaderboard />
+      </Suspense>
 
       <div className="h-[60px]" />
     </main>
