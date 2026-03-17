@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CodeBlock } from "@/components/ui/code-block";
 
 export type LeaderboardItem = {
   id: string;
@@ -13,6 +12,37 @@ export type LeaderboardItem = {
 };
 
 const COLLAPSED_HEIGHT = 90;
+
+function CodePreview({
+  codeHtml,
+  height,
+}: {
+  codeHtml: string;
+  height?: number;
+}) {
+  return (
+    <div
+      className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-auto"
+      style={height ? { height: `${height}px` } : undefined}
+    >
+      <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <span
+            key={`ln-${i}`}
+            className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
+          >
+            {i + 1}
+          </span>
+        ))}
+      </div>
+      <div
+        className="flex-1 overflow-x-hidden overflow-y-auto py-[14px] px-4 font-mono text-[13px] leading-6 gap-1.5"
+        // biome-ignore lint: shiki HTML is safe
+        dangerouslySetInnerHTML={{ __html: codeHtml }}
+      />
+    </div>
+  );
+}
 
 export function ShameLeaderboardRow({
   item,
@@ -54,10 +84,8 @@ export function ShameLeaderboardRow({
         </div>
       </div>
 
-      <CodeBlock
-        code={item.code}
-        language={item.language}
-        showHeader={false}
+      <CodePreview
+        codeHtml={item.codeHtml}
         height={isExpanded ? undefined : COLLAPSED_HEIGHT}
       />
 
