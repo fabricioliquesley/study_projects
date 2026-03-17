@@ -115,7 +115,18 @@ Regras principais:
 - Routers em `src/server/routers/`
 - Transformer: `superjson`
 
-## Referências
+## Git
+
+### Commits
+
+Formato: `devroast: mensagem`
+
+Exemplos:
+```
+devroast: add shame leaderboard with Server Components
+devroast: fix stats loading state
+docs: update API documentation
+```
 
 - [Biome Config](./biome.json)
 - [UI Components](./src/components/ui/AGENTS.md)
