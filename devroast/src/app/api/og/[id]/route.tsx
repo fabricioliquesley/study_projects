@@ -1,4 +1,4 @@
-import ImageResponse from "@takumi-rs/image-response";
+import { ImageResponse } from "@vercel/og";
 import { RoastOgImage } from "@/components/og/roast-image";
 import { createContext } from "@/server/context";
 import { appRouter } from "@/server/routers/_app";
@@ -31,7 +31,7 @@ export async function GET(
   const warningCount = issues.filter((i) => i.severity === "warning").length;
   const goodCount = issues.filter((i) => i.severity === "good").length;
 
-  return new ImageResponse(
+  const image = new ImageResponse(
     <RoastOgImage
       score={score}
       language={language}
@@ -43,10 +43,13 @@ export async function GET(
     {
       width: 1200,
       height: 630,
-      format: "webp",
-      headers: {
-        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
-      },
     },
   );
+
+  image.headers.set(
+    "Cache-Control",
+    "public, max-age=3600, stale-while-revalidate=86400",
+  );
+
+  return image;
 }
