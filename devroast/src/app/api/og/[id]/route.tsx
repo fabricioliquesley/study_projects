@@ -1,5 +1,5 @@
 import ImageResponse from "@takumi-rs/image-response";
-import type { RoastOgImage } from "@/components/og/roast-image";
+import { RoastOgImage } from "@/components/og/roast-image";
 import { createContext } from "@/server/context";
 import { appRouter } from "@/server/routers/_app";
 import { createCallerFactory } from "@/server/trpc";
@@ -7,7 +7,7 @@ import { createCallerFactory } from "@/server/trpc";
 const createCaller = createCallerFactory(appRouter);
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
@@ -47,6 +47,6 @@ export async function GET(
       headers: {
         "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
       },
-    }
+    },
   );
 }
