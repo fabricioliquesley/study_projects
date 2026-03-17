@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   type LeaderboardItem,
   ShameLeaderboardRow,
@@ -15,6 +16,8 @@ export function ShameLeaderboardUI({
   leaderboard,
   totalRoasts,
 }: ShameLeaderboardUIProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   return (
     <div className="flex w-[960px] flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -58,6 +61,10 @@ export function ShameLeaderboardUI({
           <ShameLeaderboardRow
             key={item.id}
             item={{ ...item, rank: index + 1 }}
+            isExpanded={expandedId === item.id}
+            onToggle={() =>
+              setExpandedId(expandedId === item.id ? null : item.id)
+            }
           />
         ))}
       </div>

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 export type LeaderboardItem = {
   id: string;
   rank: number;
@@ -13,8 +11,15 @@ export type LeaderboardItem = {
 
 const INITIAL_LINES = 3;
 
-export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
-  const [open, setOpen] = useState(false);
+export function ShameLeaderboardRow({
+  item,
+  isExpanded,
+  onToggle,
+}: {
+  item: LeaderboardItem;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
   const codeLines = item.code.split("\n");
   const hasMoreLines = codeLines.length > INITIAL_LINES;
 
@@ -25,7 +30,7 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
     <div className="border-t border-border-primary">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={onToggle}
         className="flex h-10 w-full items-center px-5 hover:bg-bg-elevated transition-colors cursor-pointer"
       >
         <span className="w-12 font-mono text-xs text-text-primary text-left">
@@ -42,7 +47,7 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
         </span>
       </button>
 
-      {open && (
+      {isExpanded && (
         <div className="border-t border-border-primary bg-bg-input">
           <div
             className="py-3 px-4 font-mono text-[13px] leading-6"
