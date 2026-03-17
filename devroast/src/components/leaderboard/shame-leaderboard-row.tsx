@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CodeBlock } from "@/components/ui/code-block";
 
 export type LeaderboardItem = {
   id: string;
@@ -18,6 +17,13 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
   const codeLines = item.code.split("\n");
   const hasMoreLines = codeLines.length > INITIAL_LINES;
 
+  const previewCode = codeLines.slice(0, INITIAL_LINES).join("\n");
+  const displayCode = open
+    ? item.code
+    : hasMoreLines
+      ? `${previewCode}...`
+      : item.code;
+
   return (
     <div className="flex flex-col border-t border-border-primary">
       <button
@@ -31,10 +37,8 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
         <span className="w-16 font-mono text-xs text-accent-red">
           {item.score}/10
         </span>
-        <span className="flex-1 font-mono text-xs text-text-secondary">
-          {hasMoreLines
-            ? `${codeLines.slice(0, INITIAL_LINES).join("\n")}...`
-            : item.code}
+        <span className="flex-1 font-mono text-xs text-text-secondary whitespace-pre">
+          {displayCode}
         </span>
         <span className="w-24 font-mono text-xs text-text-tertiary">
           {item.language}
@@ -42,12 +46,10 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
       </button>
 
       {open && (
-        <div className="border-t border-border-primary">
-          <CodeBlock
-            code={item.code}
-            language={item.language}
-            showHeader={false}
-          />
+        <div className="border-t border-border-primary bg-bg-input p-4">
+          <pre className="font-mono text-xs text-text-primary whitespace-pre overflow-x-auto">
+            {item.code}
+          </pre>
         </div>
       )}
     </div>
