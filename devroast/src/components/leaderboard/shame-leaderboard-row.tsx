@@ -8,6 +8,7 @@ export type LeaderboardItem = {
   score: number;
   language: string;
   code: string;
+  codeHtml: string;
 };
 
 const INITIAL_LINES = 3;
@@ -18,38 +19,36 @@ export function ShameLeaderboardRow({ item }: { item: LeaderboardItem }) {
   const hasMoreLines = codeLines.length > INITIAL_LINES;
 
   const previewCode = codeLines.slice(0, INITIAL_LINES).join("\n");
-  const displayCode = open
-    ? item.code
-    : hasMoreLines
-      ? `${previewCode}...`
-      : item.code;
+  const displayCode = hasMoreLines ? `${previewCode}...` : item.code;
 
   return (
-    <div className="flex flex-col border-t border-border-primary">
+    <div className="border-t border-border-primary">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center px-5 py-3 hover:bg-bg-elevated transition-colors cursor-pointer"
+        className="flex h-10 w-full items-center px-5 hover:bg-bg-elevated transition-colors cursor-pointer"
       >
-        <span className="w-12 font-mono text-xs text-text-primary">
+        <span className="w-12 font-mono text-xs text-text-primary text-left">
           #{item.rank}
         </span>
-        <span className="w-16 font-mono text-xs text-accent-red">
+        <span className="w-16 font-mono text-xs text-accent-red text-left">
           {item.score}/10
         </span>
-        <span className="flex-1 font-mono text-xs text-text-secondary whitespace-pre">
+        <span className="flex-1 font-mono text-xs text-text-secondary whitespace-pre text-left">
           {displayCode}
         </span>
-        <span className="w-24 font-mono text-xs text-text-tertiary">
+        <span className="w-24 font-mono text-xs text-text-tertiary text-left">
           {item.language}
         </span>
       </button>
 
       {open && (
-        <div className="border-t border-border-primary bg-bg-input p-4">
-          <pre className="font-mono text-xs text-text-primary whitespace-pre overflow-x-auto">
-            {item.code}
-          </pre>
+        <div className="border-t border-border-primary bg-bg-input">
+          <div
+            className="py-3 px-4 font-mono text-[13px] leading-6"
+            // biome-ignore lint: shiki HTML is safe
+            dangerouslySetInnerHTML={{ __html: item.codeHtml }}
+          />
         </div>
       )}
     </div>
