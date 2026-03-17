@@ -17,11 +17,22 @@ import { createCallerFactory } from "@/server/trpc";
 
 const createCaller = createCallerFactory(appRouter);
 
-export default async function RoastResultPage({
-  params,
-}: {
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params;
+  return {
+    other: {
+      "og:image": `/api/og/${id}`,
+      "og:image:width": "1200",
+      "og:image:height": "630",
+    },
+  };
+}
+
+export type Props = {
   params: Promise<{ id: string }>;
-}) {
+};
+
+export default async function RoastResultPage({ params }: Props) {
   const { id } = await params;
 
   const ctx = await createContext();
