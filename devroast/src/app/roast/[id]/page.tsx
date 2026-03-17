@@ -77,11 +77,11 @@ export default async function RoastResultPage({
     <main className="mx-auto flex max-w-[1440px] flex-col gap-10 px-10 py-10">
       <section className="flex items-center gap-12">
         <ScoreRing score={score} total={10} />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-1 flex-col gap-4">
           <h1 className="font-mono text-2xl font-bold text-text-primary">
             Roast Summary
           </h1>
-          <p className="font-mono text-sm text-text-secondary max-w-md">
+          <p className="font-mono text-sm text-text-secondary flex-1">
             {roastSummary}
           </p>
           <div className="flex items-center gap-3">
@@ -161,6 +161,7 @@ export default async function RoastResultPage({
                 diffLines={diffLines}
                 language={language}
                 showHeader={false}
+                showLineNumbers={false}
               />
             </div>
           </section>

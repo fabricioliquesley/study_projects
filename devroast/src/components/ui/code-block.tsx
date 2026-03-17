@@ -11,6 +11,7 @@ interface CodeBlockProps {
   language?: string;
   filename?: string;
   showHeader?: boolean;
+  showLineNumbers?: boolean;
   height?: number;
   diffLines?: DiffLineInput[];
 }
@@ -44,6 +45,7 @@ export async function CodeBlock({
   language = "javascript",
   filename,
   showHeader = true,
+  showLineNumbers = true,
   height,
   diffLines,
 }: CodeBlockProps) {
@@ -82,16 +84,18 @@ export async function CodeBlock({
         </div>
       )}
       <div className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-auto">
-        <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
-          {lines.map((_, index) => (
-            <span
-              key={`ln-${index}`}
-              className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
-            >
-              {index + 1}
-            </span>
-          ))}
-        </div>
+        {showLineNumbers && (
+          <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
+            {lines.map((_, index) => (
+              <span
+                key={`ln-${index}`}
+                className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
+              >
+                {index + 1}
+              </span>
+            ))}
+          </div>
+        )}
         {diffLines ? (
           <div className="flex-1 overflow-x-hidden overflow-y-auto py-[10px] px-4 font-mono text-[13px] leading-6 gap-1.5">
             {diffLines.map((line, index) => (
