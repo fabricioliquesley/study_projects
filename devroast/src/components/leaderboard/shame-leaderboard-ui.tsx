@@ -41,22 +41,7 @@ export function ShameLeaderboardUI({
         {"//"} the worst code on the internet, ranked by shame
       </p>
 
-      <div className="flex flex-col rounded border border-border-primary">
-        <div className="flex h-10 items-center bg-bg-surface px-5">
-          <span className="w-12 font-mono text-xs text-text-tertiary">
-            rank
-          </span>
-          <span className="w-16 font-mono text-xs text-text-tertiary">
-            score
-          </span>
-          <span className="flex-1 font-mono text-xs text-text-tertiary">
-            code
-          </span>
-          <span className="w-24 font-mono text-xs text-text-tertiary">
-            lang
-          </span>
-        </div>
-
+      <section className="flex flex-col gap-5">
         {leaderboard.map((item, index) => (
           <ShameLeaderboardRow
             key={item.id}
@@ -67,7 +52,7 @@ export function ShameLeaderboardUI({
             }
           />
         ))}
-      </div>
+      </section>
 
       <p className="px-4 text-center font-mono text-xs text-text-tertiary">
         showing top 3 of {totalRoasts.toLocaleString()} · view full leaderboard
