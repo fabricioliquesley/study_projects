@@ -1,22 +1,15 @@
-import Link from "next/link";
+"use client";
 
-export type LeaderboardItem = {
-  id: string;
-  rank: number;
-  score: number;
-  language: string;
-  code: string;
-};
+import Link from "next/link";
+import {
+  type LeaderboardItem,
+  ShameLeaderboardRow,
+} from "./shame-leaderboard-row";
 
 export type ShameLeaderboardUIProps = {
   leaderboard: LeaderboardItem[];
   totalRoasts: number;
 };
-
-function formatCode(code: string): string {
-  const truncated = code.slice(0, 20);
-  return code.length > 20 ? `${truncated}...` : truncated;
-}
 
 export function ShameLeaderboardUI({
   leaderboard,
@@ -62,23 +55,10 @@ export function ShameLeaderboardUI({
         </div>
 
         {leaderboard.map((item, index) => (
-          <div
+          <ShameLeaderboardRow
             key={item.id}
-            className="flex items-center px-5 py-4 border-t border-border-primary"
-          >
-            <span className="w-12 font-mono text-xs text-text-primary">
-              #{index + 1}
-            </span>
-            <span className="w-16 font-mono text-xs text-accent-red">
-              {item.score}/10
-            </span>
-            <span className="flex-1 font-mono text-xs text-text-primary">
-              {formatCode(item.code)}
-            </span>
-            <span className="w-24 font-mono text-xs text-text-secondary">
-              {item.language}
-            </span>
-          </div>
+            item={{ ...item, rank: index + 1 }}
+          />
         ))}
       </div>
 
