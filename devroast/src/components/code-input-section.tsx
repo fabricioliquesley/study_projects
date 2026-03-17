@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   CodeEditorHighlight,
@@ -9,11 +10,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { MAX_CHARS } from "@/constants";
+import { trpc } from "@/trpc/react";
 
 function CodeInputSection() {
   const [code, setCode] = useState("");
   const [roastMode, setRoastMode] = useState(true);
   const [language, setLanguage] = useState<Language>("javascript");
+  const router = useRouter();
+
+  const createSubmission = trpc.submission.create.useMutation({
+    onSuccess: (data) => {
+      router.push(`/roast/${data.id}`);
+    },
+  });
+
+  const isPending = createSubmission.isPending;
 
   const isEmpty = code.trim() === "";
   const isOverLimit = code.length > MAX_CHARS;
@@ -48,8 +59,24 @@ function CodeInputSection() {
           </div>
           <span className="font-mono text-xs text-text-tertiary" />
         </div>
-        <Button variant="primary" size="lg" disabled={isEmpty || isOverLimit}>
-          <span className="text-[#0a0a0a]">$ roast_my_code</span>
+        <Button
+          variant="primary"
+          size="lg"
+          disabled={isEmpty || isOverLimit || isPending}
+          onClick={() => {
+            if (!code.trim() || isPending) return;
+            createSubmission.mutate({
+              code: code.trim(),
+              language: language,
+              roastMode,
+            });
+          }}
+        >
+          {isPending ? (
+            "loading..."
+          ) : (
+            <span className="text-[#0a0a0a]">$ roast_my_code</span>
+          )}
         </Button>
       </div>
     </div>
