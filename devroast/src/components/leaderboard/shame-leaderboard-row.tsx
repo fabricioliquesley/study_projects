@@ -9,24 +9,29 @@ export type LeaderboardItem = {
   language: string;
   code: string;
   codeHtml: string;
+  codeHtmlCollapsed: string;
 };
 
 const COLLAPSED_HEIGHT = 90;
 
 function CodePreview({
   codeHtml,
-  height,
+  totalLines,
+  collapsed,
 }: {
   codeHtml: string;
-  height?: number;
+  totalLines: number;
+  collapsed: boolean;
 }) {
+  const visibleLines = collapsed ? Math.min(totalLines, 3) : totalLines;
+
   return (
     <div
-      className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-auto"
-      style={height ? { height: `${height}px` } : undefined}
+      className="flex flex-1 bg-bg-input min-h-0 overflow-x-hidden overflow-y-hidden"
+      style={collapsed ? { height: `${COLLAPSED_HEIGHT}px` } : undefined}
     >
-      <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-y-auto overflow-x-hidden">
-        {Array.from({ length: 20 }).map((_, i) => (
+      <div className="flex w-10 flex-col border-r border-border-primary bg-bg-surface py-[10px] text-center self-stretch gap-1.5 overflow-hidden">
+        {Array.from({ length: visibleLines }).map((_, i) => (
           <span
             key={`ln-${i}`}
             className="font-mono text-xs leading-6 text-text-tertiary pl-[10px]"
@@ -85,8 +90,9 @@ export function ShameLeaderboardRow({
       </div>
 
       <CodePreview
-        codeHtml={item.codeHtml}
-        height={isExpanded ? undefined : COLLAPSED_HEIGHT}
+        codeHtml={isExpanded ? item.codeHtml : item.codeHtmlCollapsed}
+        totalLines={totalLines}
+        collapsed={!isExpanded}
       />
 
       {hasMoreLines && !isExpanded && (
