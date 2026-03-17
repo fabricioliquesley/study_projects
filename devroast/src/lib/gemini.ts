@@ -2,6 +2,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY ?? "");
 
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 2000;
+
 export type RoastIssue = {
   severity: "critical" | "warning" | "good";
   issueType: string;
@@ -94,25 +97,48 @@ export async function analyzeCode(
   language: string,
   roastMode: boolean,
 ): Promise<RoastResult> {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = roastMode ? FULL_ROAST_PROMPT : BRUTALLY_HONEST_PROMPT;
   const finalPrompt = prompt
     .replace("{language}", language)
     .replace("{code}", code);
 
-  const result = await model.generateContent(finalPrompt);
-  const response = result.response.text();
+  let lastError: Error | null = null;
 
-  const jsonMatch = response.match(/```json\n?([\s\S]*?)\n?```/) ||
-    response.match(/```\n?([\s\S]*?)\n?```/) || [null, response];
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const result = await model.generateContent(finalPrompt);
+      const response = result.response.text();
 
-  const jsonStr = jsonMatch[1] || response;
-  const parsed = JSON.parse(jsonStr.trim());
+      const jsonMatch = response.match(/```json\n?([\s\S]*?)\n?```/) ||
+        response.match(/```\n?([\s\S]*?)\n?```/) || [null, response];
 
+      const jsonStr = jsonMatch[1] || response;
+      const parsed = JSON.parse(jsonStr.trim());
+
+      return {
+        roastSummary: parsed.roastSummary,
+        score: parsed.score,
+        issues: parsed.issues || [],
+      };
+    } catch (error) {
+      lastError = error as Error;
+
+      if (attempt < MAX_RETRIES - 1) {
+        const backoffMs = INITIAL_BACKOFF_MS * 2 ** attempt;
+        console.log(
+          `Gemini API error (attempt ${attempt + 1}/${MAX_RETRIES}): ${lastError.message}. Retrying in ${backoffMs}ms...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+  }
+
+  console.error("Gemini API error after retries:", lastError?.message);
   return {
-    roastSummary: parsed.roastSummary,
-    score: parsed.score,
-    issues: parsed.issues || [],
+    roastSummary: "Failed to analyze code. Please try again later.",
+    score: 5,
+    issues: [],
   };
 }
