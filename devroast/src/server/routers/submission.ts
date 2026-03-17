@@ -35,8 +35,109 @@ const LANGUAGE_MAP: Record<string, string> = {
   markdown: "Markdown",
 };
 
+const VALID_ISSUE_TYPES = [
+  "naming",
+  "performance",
+  "security",
+  "best_practice",
+  "syntax",
+  "style",
+  "error_handling",
+  "architecture",
+  "documentation",
+  "logic",
+] as const;
+
 function normalizeLanguage(lang: string): string {
   return LANGUAGE_MAP[lang.toLowerCase()] || lang;
+}
+
+function normalizeIssueType(
+  issueType: string,
+): (typeof VALID_ISSUE_TYPES)[number] {
+  const normalized = issueType.toLowerCase().replace(/\s+/g, "_");
+
+  if (
+    VALID_ISSUE_TYPES.includes(normalized as (typeof VALID_ISSUE_TYPES)[number])
+  ) {
+    return normalized as (typeof VALID_ISSUE_TYPES)[number];
+  }
+
+  if (
+    normalized.includes("naming") ||
+    normalized.includes("variable") ||
+    normalized.includes("const") ||
+    normalized.includes("function_name")
+  ) {
+    return "naming";
+  }
+  if (
+    normalized.includes("performance") ||
+    normalized.includes("optimization") ||
+    normalized.includes("complexity") ||
+    normalized.includes("loop")
+  ) {
+    return "performance";
+  }
+  if (
+    normalized.includes("security") ||
+    normalized.includes("vulnerability") ||
+    normalized.includes("injection") ||
+    normalized.includes("xss")
+  ) {
+    return "security";
+  }
+  if (
+    normalized.includes("best_practice") ||
+    normalized.includes("best practice") ||
+    normalized.includes("convention") ||
+    normalized.includes("idiomatic")
+  ) {
+    return "best_practice";
+  }
+  if (
+    normalized.includes("syntax") ||
+    normalized.includes("parse") ||
+    normalized.includes("error")
+  ) {
+    return "syntax";
+  }
+  if (
+    normalized.includes("style") ||
+    normalized.includes("format") ||
+    normalized.includes("whitespace") ||
+    normalized.includes("indentation")
+  ) {
+    return "style";
+  }
+  if (
+    normalized.includes("error_handling") ||
+    normalized.includes("error handling") ||
+    normalized.includes("exception") ||
+    normalized.includes("try_catch") ||
+    normalized.includes("null") ||
+    normalized.includes("undefined")
+  ) {
+    return "error_handling";
+  }
+  if (
+    normalized.includes("architecture") ||
+    normalized.includes("design") ||
+    normalized.includes("pattern") ||
+    normalized.includes("coupling")
+  ) {
+    return "architecture";
+  }
+  if (
+    normalized.includes("documentation") ||
+    normalized.includes("comment") ||
+    normalized.includes("readme") ||
+    normalized.includes("jsdoc")
+  ) {
+    return "documentation";
+  }
+
+  return "logic";
 }
 
 export const submissionRouter = router({
@@ -87,9 +188,7 @@ export const submissionRouter = router({
           id: issueId,
           analysisId,
           severity: issue.severity,
-          issueType: issue.issueType as unknown as Parameters<
-            typeof issueQueries.create
-          >[0]["issueType"],
+          issueType: normalizeIssueType(issue.issueType),
           line: issue.line,
           column: null,
           description: issue.description,
