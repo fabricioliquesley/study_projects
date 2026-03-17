@@ -4,6 +4,8 @@ import { ShameLeaderboard } from "@/components/leaderboard/shame-leaderboard";
 import { ShameLeaderboardSkeleton } from "@/components/leaderboard/shame-leaderboard-skeleton";
 import { Stats } from "@/components/stats/stats";
 
+export const revalidate = 3600;
+
 export default function HomePage() {
   return (
     <main className="mx-auto flex max-w-[1440px] flex-col items-center gap-8 px-10 py-20">
